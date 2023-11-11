@@ -43,10 +43,11 @@ const signInUser = async (req, res) => {
       return res.status(404).json("Incorrect email and password combination");
     }
 
+    console.log(user.email);
+
     // Authenticate user with jwt
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRATION,
-    });
+    console.log(process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user.email }, process.env.JWT_SECRET);
 
     res.status(200).send({
       id: user.id,
