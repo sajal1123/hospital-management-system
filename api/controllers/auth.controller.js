@@ -29,7 +29,14 @@ const registerUser = async (req, res) => {
 
 const signInUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { id, email, password, userType } = req.body;
+    console.log(email, password, userType)
+    if(id && userType === "employee"){
+      email = id;
+    }
+    else if(email && userType === "patient"){
+      email = email;
+    }
     const user = await db.User.findOne({
       where: { email },
     });
