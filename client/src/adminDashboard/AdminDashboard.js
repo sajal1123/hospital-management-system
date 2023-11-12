@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     <div>
       <h2>Welcome to the Admin Dashboard</h2>
 
-      <div className="table-container">
+      <div className={`table-container ${showNurseTable ? 'visible' : 'hidden'}`}>
         <h3>
           Nurse Information
           <button onClick={toggleNurseTable}>
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
         {showNurseTable && <NurseTable nurses={nurses} />}
       </div>
 
-      <div className="table-container">
+      <div className={`table-container ${showPatientTable ? 'visible' : 'hidden'}`}>
         <h3>
           Patient Information
           <button onClick={togglePatientTable}>
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
         {showPatientTable && <PatientTable patients={patients} />}
       </div>
 
-      <div className="table-container">
+      <div className={`table-container ${showVaccineTable ? 'visible' : 'hidden'}`}>
         <h3>
           Vaccine Information
           <button onClick={toggleVaccineTable}>
