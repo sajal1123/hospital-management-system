@@ -1,6 +1,7 @@
 // src/components/PatientLandingPage.js
 import React from 'react';
 import NavbarPatient from './navBar';
+import './patientLandingPage.css';
 
 const PatientLandingPage = () => {
   const patientInfo = {
