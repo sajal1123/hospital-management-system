@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, type } = req.body;
     // Check if the email exists
     const userExists = await db.User.findOne({
       where: { email },
@@ -19,7 +19,9 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: await bcrypt.hash(password, 15),
+      type,
     });
+
     return res.status(200).send("Registration successful");
   } catch (err) {
     console.log(err);
@@ -30,11 +32,10 @@ const registerUser = async (req, res) => {
 const signInUser = async (req, res) => {
   try {
     let { id, email, password, userType } = req.body;
-    console.log(email, password, userType)
-    if(id && userType === "employee"){
+    console.log(email, password, userType);
+    if (id && userType === "employee") {
       email = id;
-    }
-    else if(email && userType === "patient"){
+    } else if (email && userType === "patient") {
       email = email;
     }
     const user = await db.User.findOne({
@@ -53,8 +54,10 @@ const signInUser = async (req, res) => {
     console.log(user.email);
 
     // Authenticate user with jwt
-    console.log(process.env.JWT_SECRET);
-    const token = jwt.sign({ id: user.email }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: user.email, type: user.type },
+      process.env.JWT_SECRET
+    );
 
     res.status(200).send({
       id: user.id,
