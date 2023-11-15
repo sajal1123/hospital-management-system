@@ -4,6 +4,8 @@ const {
   registerNurse,
   updateNurse,
   deleteNurse,
+  getAvailableSlots,
+  bookSlot,
 } = require("../controllers/nurse.controller");
 
 const {
@@ -24,6 +26,10 @@ router.post("/register-nurse", verifyAccessToken, registerNurse);
 router.put("/update-nurse/:empID", verifyAccessToken, updateNurse);
 
 router.delete("/delete-nurse/:empID", verifyAccessToken, deleteNurse);
+
+router.get("/get-slots", verifyAccessToken, getAvailableSlots);
+
+router.post("/book-slot", verifyAccessToken, bookSlot);
 
 router.post("/add-vaccine", verifyAccessToken, registerVaccine);
 

@@ -14,7 +14,9 @@ module.exports = (sequelize, DataTypes) => {
   Nurse.init(
     {
       empID: { type: DataTypes.STRING, primaryKey: true },
-      name: { type: DataTypes.STRING, allowNull: false },
+      firstName: { type: DataTypes.STRING, allowNull: false },
+      middleName: { type: DataTypes.STRING, allowNull: true },
+      lastName: { type: DataTypes.STRING, allowNull: false },
       age: { type: DataTypes.INTEGER, allowNull: false },
       gender: { type: DataTypes.STRING, allowNull: false },
       email: { type: DataTypes.STRING, allowNull: false },
