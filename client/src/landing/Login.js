@@ -1,5 +1,5 @@
-// src/Login.js or src/LandingPage.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
   const [employeeId, setEmployeeId] = useState('');
@@ -8,10 +8,14 @@ const Login = ({ onLogin }) => {
   const [patientEmail, setPatientEmail] = useState('');
   const [patientPassword, setPatientPassword] = useState('');
 
-  const handleLogin = ({userType}) => {
+  const navigate = useNavigate();
+
+  const handleLogin = ({ userType }) => {
     // Validation logic
-    if ((userType === 'employee' && employeeId && employeePassword) || 
-        (userType === 'patient' && patientEmail && patientPassword)) {
+    if (
+      (userType === 'employee' && employeeId && employeePassword) ||
+      (userType === 'patient' && patientEmail && patientPassword)
+    ) {
       const credentials = {
         id: userType === 'employee' ? employeeId : null,
         email: userType === 'patient' ? patientEmail : null,
@@ -35,7 +39,14 @@ const Login = ({ onLogin }) => {
         })
         .then((data) => {
           console.log(`${userType} login successful:`, data);
-          onLogin(userType === 'employee' ? employeeId : patientEmail);
+
+          if (data.email === 'admin@uic.edu') {
+            // If the user is an admin, navigate to the admin dashboard
+            navigate('/admin-dashboard');
+          } else {
+            // Otherwise, proceed with regular login handling
+            navigate('/'+userType)
+          }
         })
         .catch((error) => {
           console.error(`Error during ${userType} login:`, error.message);
@@ -46,7 +57,7 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10%'}}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10%' }}>
       <div style={{ textAlign: 'center', marginRight: '20px' }}>
         <h2>Employee Login</h2>
         <label>
@@ -59,7 +70,7 @@ const Login = ({ onLogin }) => {
           <input type="password" value={employeePassword} onChange={(e) => setEmployeePassword(e.target.value)} />
         </label>
         <br />
-        <button onClick={() => handleLogin({ userType: "employee" })}>Login</button>
+        <button onClick={() => handleLogin({ userType: 'employee' })}>Login</button>
       </div>
       <div style={{ borderLeft: '1px solid #ccc', paddingLeft: '20px' }}>
         <h2>Patient Login</h2>
@@ -73,7 +84,7 @@ const Login = ({ onLogin }) => {
           <input type="password" value={patientPassword} onChange={(e) => setPatientPassword(e.target.value)} />
         </label>
         <br />
-        <button onClick={() => handleLogin({ userType: "patient" })}>Login</button>
+        <button onClick={() => handleLogin({ userType: 'patient' })}>Login</button>
       </div>
     </div>
   );
