@@ -1,90 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import './Schedules.css'; // Import your CSS file for styling
+import React, { useState } from 'react';
+import './Schedules.css';
 
 const Schedules = () => {
-  // State to manage available time slots
-  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  // State to keep track of selected slots
+  const [selectedSlots, setSelectedSlots] = useState([]);
 
-  // State to manage user-selected time slots
-  const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
-
-  // Function to generate available time slots (Sunday from 10 AM to 5 PM, 1-hour slots)
-  const generateAvailableTimeSlots = () => {
-    const days = ['Sunday'];
-    const startHour = 10;
-    const endHour = 17;
-
-    const slots = [];
-
-    days.forEach(day => {
-      for (let hour = startHour; hour <= endHour; hour++) {
-        const time = `${day} ${hour}:00 - ${hour + 1}:00`;
-        slots.push({ id: slots.length + 1, time, available: true });
-      }
-    });
-
-    return slots;
+  // Function to handle slot click
+  const handleSlotClick = (day, hour) => {
+    const slot = `${day}-${hour}`;
+    if (selectedSlots.includes(slot)) {
+      // If slot is already selected, remove it
+      setSelectedSlots(selectedSlots.filter((s) => s !== slot));
+    } else {
+      // If slot is not selected, add it
+      setSelectedSlots([...selectedSlots, slot]);
+    }
   };
 
-  // Fetch available time slots (replace with your actual API call)
-  useEffect(() => {
-    // Example API call (replace with your actual endpoint)
-    // In this case, we're using the generated time slots
-    setAvailableTimeSlots(generateAvailableTimeSlots());
-  }, []);
-
-  // Function to handle adding a time slot
-  const handleAddTimeSlot = () => {
-    // Get the selected time slot from the dropdown
-    const selectedSlot = document.getElementById('timeSlotDropdown').value;
-
-    // Update the selected time slots
-    setSelectedTimeSlots(prevSlots => [...prevSlots, selectedSlot]);
-
-    // Add your logic for the API call to save the selected time slot
-    // Example: fetch('/api/addTimeSlot', { method: 'POST', body: JSON.stringify(selectedSlot) })
-    //   .then(response => response.json())
-    //   .then(data => console.log('Time slot added successfully:', data))
-    //   .catch(error => console.error('Error adding time slot:', error));
+  // Function to handle "Clear" button click
+  const handleClearClick = () => {
+    // Clear all selected slots
+    setSelectedSlots([]);
   };
 
-  console.log("slotv= ", availableTimeSlots);
+  // Function to add nurse shift (placeholder for future functionality)
+  const addNurseShift = () => {
+    // Placeholder for saving schedule logic
+  };
+
+  // Generate 1-hour slot timings from 9 AM to 5 PM for all 7 days
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const hours = Array.from({ length: 9 }, (_, index) => index + 9); // 9 AM to 5 PM
 
   return (
     <div className="schedules-container">
-      {/* Column 1: Add Shift */}
-      <div className="add-shift-column">
-        <h2>Add Shift</h2>
-        {/* Calendar-like display of available time slots */}
-        <div className="calendar">
-
-          {availableTimeSlots.map(slot => (
-            <div key={slot.id} className={`time-slot${slot.available ? 'available' : 'unavailable'}`}>
-              {slot.time}
-            </div>
-          ))}
-        </div>
-        {/* Dropdown to select time slot */}
-        <select id="timeSlotDropdown">
-          {availableTimeSlots.map(slot => (
-            <option key={slot.id} value={slot.time} disabled={!slot.available}>
-              {slot.time}
-            </option>
-          ))}
-        </select>
-
-        {/* Add button */}
-        <button onClick={() => handleAddTimeSlot()}>Add</button>
+      {/* Slot table */}
+      <div className="slot-table">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              {days.map((day) => (
+                <th key={day}>{day}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {hours.map((hour) => (
+              <tr key={hour}>
+                <td>{hour}:00 - {hour + 1}:00</td>
+                {days.map((day) => (
+                  <td
+                    key={`${day}-${hour}`}
+                    onClick={() => handleSlotClick(day, hour)}
+                    className={`slot-cell ${selectedSlots.includes(`${day}-${hour}`) ? 'selected' : ''}`}
+                  ></td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Column 2: Your Schedule */}
-      <div className="your-schedule-column">
-        <h2>Your Schedule</h2>
-        {/* Display user-selected time slots */}
+      {/* Your schedules section */}
+      <div className="your-schedules">
+        <button onClick={addNurseShift}>
+          {"Save Schedule"}
+        </button>
+        <button onClick={handleClearClick} className="clear-button">
+          {"Clear"}
+        </button>
+        <h2>Your Schedules</h2>
         <ul>
-          {selectedTimeSlots.map((slot, index) => (
-            <li key={index}>{slot}</li>
-          ))}
+          {selectedSlots.map((slot) => {
+            const [day, startHour] = slot.split('-');
+            const endHour = parseInt(startHour) + 1;
+            return (
+              <li key={slot} className="selected-slot">
+                {`${day}, ${startHour}:00 - ${endHour}:00`}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

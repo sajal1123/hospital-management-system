@@ -5,6 +5,7 @@ import PatientTable from './PatientTable';
 import VaccineTable from './VaccineTable';
 // import './tableStyle.css';
 import './addNurseForm.css';
+import Navbar from './navBar';
 
 const AdminDashboard = () => {
   const [nurses, setNurses] = useState([]);
@@ -194,6 +195,7 @@ const AdminDashboard = () => {
 
   return (
     <div>
+      <Navbar/>
       <h2>Welcome to the Admin Dashboard</h2>
 
       <div className={`table-container ${showNurseTable ? 'visible' : 'hidden'}`}>
@@ -215,6 +217,9 @@ const AdminDashboard = () => {
           Vaccine Information
           <button onClick={toggleVaccineTable}>
             {showVaccineTable ? 'Hide' : 'Show'}
+          </button>
+          <button onClick={addNurse}>
+            {"Add Vaccinee"}  
           </button>
         </h3>
         {showVaccineTable && <VaccineTable vaccines={vaccines} />}
