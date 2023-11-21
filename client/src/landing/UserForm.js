@@ -25,6 +25,7 @@ const UserForm = ({ onSubmit }) => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
+          alert("Your Account has been registered! Please proceed to login.");
           return response.json();
         })
         .then((data) => {

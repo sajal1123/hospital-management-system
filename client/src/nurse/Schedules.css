@@ -1,0 +1,48 @@
+/* Schedules.css */
+
+.schedules-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .add-shift-column {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .time-slot {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .time-slotavailable {
+    background-color: #b0e57c;
+  }
+  
+  .time-slotunavailable {
+    background-color: #f4a6a6;
+  }
+  
+  .your-schedule-column {
+    flex: 1;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  

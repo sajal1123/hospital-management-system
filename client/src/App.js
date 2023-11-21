@@ -7,6 +7,7 @@ import CreateAccount from './landing/CreateAccount';
 import AdminDashboard from './adminDashboard/AdminDashboard';
 import NurseLandingPage from './nurse/NurseLandingPage';
 import PatientLandingPage from './patient/patientLandingPage';
+import Schedules from './nurse/Schedules';
 
 function App() {
   const handleLogin = (username) => {
@@ -27,8 +28,9 @@ function App() {
             <Route path="/" element={<LandingPage onLogin={handleLogin} />} />
             <Route path="/create-account" element={<CreateAccount onCreateAccount={handleCreateAccount} />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/nurse" element={<NurseLandingPage />} />
+            <Route path="/employee" element={<NurseLandingPage />} />
             <Route path="/patient" element={<PatientLandingPage />} />
+            <Route path="employee/schedules" element={<Schedules />} />
           </Routes>
         </header>
       </div>

@@ -6,17 +6,26 @@
     transition: max-height 3s ease-in-out, opacity 3s ease-in-out; /* Added opacity transition */
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  th, td {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
+/* tableStyle.css */
+
+/* Add a class for the table */
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: #f2f2f2; /* Set your desired background color */
+}
+
+.table-container th, .table-container td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+/* Add hover effect for better user interaction */
+.table-container tr:hover {
+  background-color: #e5e5e5; /* Set your desired hover background color */
+}
   
   th {
     background-color: #f2f2f2;

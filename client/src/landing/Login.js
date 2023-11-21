@@ -11,6 +11,13 @@ const Login = ({ onLogin }) => {
   const navigate = useNavigate();
 
   const handleLogin = ({ userType }) => {
+
+    // Display loading animation
+    const loadingDiv = document.createElement('div');
+    loadingDiv.textContent = 'Loading...';
+    loadingDiv.className = 'loading';
+    document.body.appendChild(loadingDiv);
+    
     // Validation logic
     if (
       (userType === 'employee' && employeeId && employeePassword) ||
@@ -38,6 +45,10 @@ const Login = ({ onLogin }) => {
           return response.json();
         })
         .then((data) => {
+
+          // Remove loading animation
+          loadingDiv.remove();
+
           console.log(`${userType} login successful:`, data);
 
           if (data.email === 'admin@uic.edu') {
@@ -49,6 +60,19 @@ const Login = ({ onLogin }) => {
           }
         })
         .catch((error) => {
+          // Remove loading animation
+          loadingDiv.remove();
+
+          // Show error message div for 3 seconds
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'message';
+          messageDiv.textContent = `Error: ${error}`;
+
+          document.body.appendChild(messageDiv);
+
+          setTimeout(() => {
+            messageDiv.remove();
+          }, 3000);
           console.error(`Error during ${userType} login:`, error.message);
         });
     } else {
