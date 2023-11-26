@@ -31,7 +31,7 @@ const registerUser = async (req, res) => {
 
 const signInUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, userType } = req.body;
     console.log(email, password);
 
     // Find the user by email
@@ -52,6 +52,16 @@ const signInUser = async (req, res) => {
     // Fetch the empID from the Nurses table
     console.log(user);
     let empID = null;
+
+    if (
+      (user.type === 1 && userType != "employee") ||
+      (user.type === 2 && userType != "patient")
+    ) {
+      res
+        .status(403)
+        .json("Unauthorized Access. Please Login as per your role!");
+    }
+
     if (user.type === 1) {
       console.log("here");
       const nurse = await db.Nurse.findOne({
