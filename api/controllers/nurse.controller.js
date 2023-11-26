@@ -199,8 +199,6 @@ const getAvailableSlots = async (req, res) => {
   }
 };
 
-module.exports = { getAvailableSlots };
-
 const bookSlots = async (req, res) => {
   try {
     const { email, timeSlotIDs } = req.body;
@@ -311,6 +309,73 @@ const cancelSlots = async (req, res) => {
   }
 };
 
+const getNurseInfo = async (req, res) => {
+  try {
+    if (req.authPayload.type !== 0 && req.authPayload.type !== 1) {
+      return res.status(403).json("Unauthorized access");
+    }
+
+    const empID = req.query.empID;
+    if (!empID) {
+      return res.status(400).json("Employee ID is required");
+    }
+
+    const nurse = await db.Nurse.findOne({
+      where: { empID: empID },
+      include: [
+        {
+          model: db.User,
+          as: "user",
+          attributes: ["name", "email"],
+        },
+        {
+          model: db.NurseShifts,
+          as: "shifts",
+          include: [
+            {
+              model: db.Schedule,
+              as: "timeSlot",
+              attributes: ["timeSlot"], // Include only the timeSlot string
+            },
+          ],
+        },
+      ],
+      attributes: [
+        "empID",
+        "email",
+        "firstName",
+        "lastName",
+        "phone",
+        "gender",
+        "address",
+        "age",
+      ],
+    });
+
+    if (!nurse) {
+      return res.status(404).json("Nurse not found");
+    }
+
+    const nurseInfo = {
+      empID: nurse.empID,
+      name: nurse.user ? nurse.user.name : null,
+      email: nurse.email,
+      address: nurse.address,
+      phone: nurse.phone,
+      gender: nurse.gender,
+      age: nurse.age,
+      shifts: nurse.shifts.map((shift) =>
+        shift.timeSlot ? shift.timeSlot.timeSlot : null
+      ),
+    };
+
+    res.status(200).json(nurseInfo);
+  } catch (error) {
+    console.error("Error fetching nurse info:", error);
+    res.status(500).send("Error fetching nurse information");
+  }
+};
+
 module.exports = {
   registerNurse,
   updateNurse,
@@ -318,4 +383,5 @@ module.exports = {
   getAvailableSlots,
   bookSlots,
   cancelSlots,
+  getNurseInfo,
 };

@@ -3,7 +3,6 @@ const db = require("../models/index");
 const getNursesInfo = async (req, res) => {
   try {
     if (req.authPayload.type !== 0) {
-      // Ensure strict equality check
       return res.status(403).json("Only Admin can view nurse information");
     }
 
@@ -12,21 +11,32 @@ const getNursesInfo = async (req, res) => {
         {
           model: db.User,
           as: "user",
-          attributes: ["name", "email"], // Include 'email' to debug
+          attributes: ["name", "email"],
+        },
+        {
+          model: db.NurseShifts,
+          as: "shifts",
+          include: [
+            {
+              model: db.Schedule,
+              as: "timeSlot",
+              attributes: ["timeSlot"], // Include only the timeSlot string
+            },
+          ],
         },
       ],
-      attributes: ["empID", "email"], // Include 'empID' for the response
+      attributes: ["empID", "email", "firstName", "lastName"],
     });
 
-    // Use .map to create a new array of nurse information
-    // console.log(nurses);
     const nurseInfo = nurses.map((nurse) => ({
+      empID: nurse.empID,
       name: nurse.user.name,
       email: nurse.email,
-      empID: nurse.empID,
+      shifts: nurse.shifts.map((shift) =>
+        shift.timeSlot ? shift.timeSlot.timeSlot : null
+      ), // Get the timeSlot string
     }));
 
-    // Send the nurseInfo array as a JSON response
     res.status(200).json(nurseInfo);
   } catch (error) {
     console.error("Error fetching nurses info:", error);
@@ -90,6 +100,7 @@ const getNurseInfo = async (req, res) => {
     return res.status(500).json("Error fetching nurse information");
   }
 };
+
 const getVaccineInfo = async (req, res) => {
   try {
     if (!(req.authPayload.type === 0 || req.authPayload.type === 1)) {

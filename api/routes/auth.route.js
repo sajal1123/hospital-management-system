@@ -7,12 +7,12 @@ const {
   getAvailableSlots,
   bookSlots,
   cancelSlots,
+  getNurseInfo,
 } = require("../controllers/nurse.controller");
 
 const {
   getNursesInfo,
   getVaccinesInfo,
-  getNurseInfo,
   getVaccineInfo,
 } = require("../controllers/admin.controller");
 
