@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Nurse.belongsTo(models.User, { foreignKey: "email", as: "user" });
+      Nurse.hasMany(models.NurseShifts, {
+        foreignKey: "NurseID",
+        as: "shifts",
+      });
     }
   }
   Nurse.init(
@@ -19,7 +24,12 @@ module.exports = (sequelize, DataTypes) => {
       lastName: { type: DataTypes.STRING, allowNull: false },
       age: { type: DataTypes.INTEGER, allowNull: false },
       gender: { type: DataTypes.STRING, allowNull: false },
-      email: { type: DataTypes.STRING, allowNull: false },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        references: { model: "Users", key: "email" },
+      },
       phone: { type: DataTypes.STRING, allowNull: false },
       address: { type: DataTypes.STRING, allowNull: false },
     },

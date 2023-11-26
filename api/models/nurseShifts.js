@@ -7,12 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       NurseShifts.belongsTo(models.Nurse, {
         foreignKey: "NurseID",
         as: "nurse",
-        onDelete: "CASCADE",
       });
       NurseShifts.belongsTo(models.Schedule, {
         foreignKey: "TimeSlotID",
         as: "timeSlot",
-        onDelete: "CASCADE",
       });
     }
   }
@@ -25,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
           model: "Nurses", // Name of the Nurse table
           key: "empID", // Key in Nurse to which it references
         },
-        primaryKey: true,
       },
       TimeSlotID: {
         type: DataTypes.INTEGER,
@@ -33,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
           model: "Schedules", // Name of the Schedule table
           key: "id", // Key in Schedule to which it references
         },
-        primaryKey: true,
       },
     },
     {

@@ -31,16 +31,14 @@ const registerUser = async (req, res) => {
 
 const signInUser = async (req, res) => {
   try {
-    let { id, email, password, userType } = req.body;
-    console.log(email, password, userType);
-    if (id && userType === "employee") {
-      email = id;
-    } else if (email && userType === "patient") {
-      email = email;
-    }
+    const { email, password } = req.body;
+    console.log(email, password);
+
+    // Find the user by email
     const user = await db.User.findOne({
       where: { email },
     });
+
     if (!user) {
       return res.status(404).json("Email not found");
     }
@@ -51,16 +49,31 @@ const signInUser = async (req, res) => {
       return res.status(404).json("Incorrect email and password combination");
     }
 
-    console.log(user.email);
+    // Fetch the empID from the Nurses table
+    console.log(user);
+    let empID = null;
+    if (user.type === 1) {
+      console.log("here");
+      const nurse = await db.Nurse.findOne({
+        where: { email },
+        attributes: ["empID"],
+      });
+      if (!nurse) {
+        return res.status(404).json("Nurse profile not found");
+      }
+      empID = nurse.empID;
+    }
 
     // Authenticate user with jwt
     const token = jwt.sign(
-      { id: user.email, type: user.type },
+      { id: user.id, type: user.type },
       process.env.JWT_SECRET
     );
 
+    // Return the user info and token, including empID if it was found
     res.status(200).send({
       id: user.id,
+      empID: empID, // This will be null if user is not an employee
       name: user.name,
       email: user.email,
       accessToken: token,

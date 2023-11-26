@@ -35,6 +35,13 @@ const registerNurse = async (req, res) => {
     const uniqueString = crypto.randomBytes(4).toString("hex");
     const empID = `${firstName}-${uniqueString}`;
 
+    await db.User.create({
+      name: firstName + middleName + lastName,
+      email,
+      password: hashedPassword,
+      type: 1,
+    });
+
     // Create the Nurse record
     await db.Nurse.create({
       empID,
@@ -46,13 +53,6 @@ const registerNurse = async (req, res) => {
       email,
       phone,
       address,
-    });
-
-    await db.User.create({
-      name: firstName + middleName + lastName,
-      email,
-      password: hashedPassword,
-      type: 1,
     });
 
     return res.status(200).json("Nurse registration successful");
