@@ -165,9 +165,9 @@ const getAvailableSlots = async (req, res) => {
   }
 };
 
-const bookSlot = async (req, res) => {
+const bookSlots = async (req, res) => {
   try {
-    const { email, timeSlotID } = req.body;
+    const { email, timeSlotIDs } = req.body;
 
     // Query the Nurse table to get the empID associated with the email
     const nurse = await db.Nurse.findOne({
@@ -181,11 +181,38 @@ const bookSlot = async (req, res) => {
 
     const empID = nurse.empID;
 
-    // Create a record in the NurseShifts table
-    await db.NurseShifts.create({
-      NurseID: empID,
-      TimeSlotID: timeSlotID,
-    });
+    for (const timeSlotID of timeSlotIDs) {
+      // Create a record in the NurseShifts table
+      await db.NurseShifts.create({
+        NurseID: empID,
+        TimeSlotID: timeSlotID,
+      });
+
+      // Fetch the Schedule record for the current timeSlotID
+      const scheduleRecord = await db.Schedule.findOne({
+        where: { id: timeSlotID },
+      });
+
+      if (scheduleRecord) {
+        console.log("Here");
+        // Increment the existing number of nurses
+        const updatedNursesCount = scheduleRecord.numberOfNurses + 1;
+
+        // Calculate the new capacity
+        const updatedCapacity = Math.min(10 * updatedNursesCount, 100);
+
+        // Update the Schedule record with the new values
+        await db.Schedule.update(
+          {
+            numberOfNurses: updatedNursesCount,
+            capacity: updatedCapacity,
+          },
+          {
+            where: { id: timeSlotID },
+          }
+        );
+      }
+    }
 
     return res.status(200).json("Slot booking successful");
   } catch (err) {
@@ -194,10 +221,65 @@ const bookSlot = async (req, res) => {
   }
 };
 
+const cancelSlots = async (req, res) => {
+  try {
+    const { email, timeSlotIDs } = req.body;
+    const nurse = await db.Nurse.findOne({
+      where: { email },
+    });
+
+    if (!nurse) {
+      return res.status(404).json("Nurse not found with the given email");
+    }
+
+    const empID = nurse.empID;
+
+    for (const timeSlotID of timeSlotIDs) {
+      // Delete the record in the NurseShifts table
+      await db.NurseShifts.destroy({
+        where: {
+          NurseID: empID,
+          TimeSlotID: timeSlotID,
+        },
+      });
+
+      // Fetch the Schedule record for the current timeSlotID
+      const scheduleRecord = await db.Schedule.findOne({
+        where: { id: timeSlotID },
+      });
+
+      if (scheduleRecord && scheduleRecord.numberOfNurses > 0) {
+        // Decrement the existing number of nurses
+        const updatedNursesCount = scheduleRecord.numberOfNurses - 1;
+
+        // Calculate the new capacity
+        const updatedCapacity = Math.max(10 * updatedNursesCount, 0);
+
+        // Update the Schedule record with the new values
+        await db.Schedule.update(
+          {
+            numberOfNurses: updatedNursesCount,
+            capacity: updatedCapacity,
+          },
+          {
+            where: { id: timeSlotID },
+          }
+        );
+      }
+    }
+
+    return res.status(200).json("Slot cancellation successful");
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json("Error in cancelling slot");
+  }
+};
+
 module.exports = {
   registerNurse,
   updateNurse,
   deleteNurse,
   getAvailableSlots,
-  bookSlot,
+  bookSlots,
+  cancelSlots,
 };
