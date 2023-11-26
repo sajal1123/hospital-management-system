@@ -19,12 +19,12 @@ const VaccineTable = ({ vaccines }) => {
         {vaccines.map((vaccine) => (
           <tr key={vaccine.id}>
             <td>{vaccine.name}</td>
-            <td>{vaccine.company}</td>
-            <td>{vaccine.dosesRequired}</td>
+            <td>{vaccine.companyName}</td>
+            <td>{vaccine.doses}</td>
             <td>{vaccine.inStock}</td>
-            <td>{vaccine.onHold}</td>
+            <td>{0}</td>
             <td>
-              <button onClick={() => handleUpdate(vaccine.id)}>Update</button>
+              <button onClick={() => handleUpdate(vaccine.VaccineID)}>Update</button>
             </td>
           </tr>
         ))}

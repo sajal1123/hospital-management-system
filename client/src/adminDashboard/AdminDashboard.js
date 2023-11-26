@@ -16,21 +16,36 @@ const AdminDashboard = () => {
   const [showPatientTable, setShowPatientTable] = useState(true);
   const [showVaccineTable, setShowVaccineTable] = useState(true);
 
+  var adminToken = localStorage.getItem("accessToken")
+
   useEffect(() => {
     // Fetch data for nurses, patients, and vaccines when the component mounts
     // You should replace the fetch calls with your backend API endpoints
-    fetch('/api/getNurses')
+
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", adminToken);
+    myHeaders.append("Content-Type", "application/json");
+
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+    
+    fetch('http://localhost:9000/api/get-nurses', requestOptions)
       .then((response) => response.json())
       .then((data) => setNurses(data));
 
-    fetch('/api/getPatients')
+    fetch('http://localhost:9000/api/getPatients', requestOptions)
       .then((response) => response.json())
       .then((data) => setPatients(data));
 
-    fetch('/api/getVaccines')
+    fetch('http://localhost:9000/api/get-vaccines', requestOptions)
       .then((response) => response.json())
       .then((data) => setVaccines(data));
   }, []);
+
+  console.log("nursessss = ", nurses);
 
   const toggleNurseTable = () => setShowNurseTable(!showNurseTable);
   const togglePatientTable = () => setShowPatientTable(!showPatientTable);
@@ -123,7 +138,6 @@ const AdminDashboard = () => {
 
       console.log("form data -> ", formData);
 
-      var adminToken = localStorage.getItem("accessToken")
     
       // Modify this part to use the nameData and formData dynamically
       var myHeaders = new Headers();
@@ -268,8 +282,6 @@ const AdminDashboard = () => {
         });
 
         console.log("form data -> ", formData);
-
-        var adminToken = localStorage.getItem("accessToken")
 
         var myHeaders = new Headers();
         myHeaders.append("Authorization", adminToken); // Replace with your actual authorization token

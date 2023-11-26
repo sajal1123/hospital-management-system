@@ -24,15 +24,15 @@
 
 /* Add hover effect for better user interaction */
 .table-container tr:hover {
-  background-color: #e5e5e5; /* Set your desired hover background color */
+  background-color: #181818; /* Set your desired hover background color */
 }
   
   th {
     background-color: #f2f2f2;
   }
   
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
+  tr {
+    background-color: #333232;
   }
   
   button {

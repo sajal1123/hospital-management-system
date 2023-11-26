@@ -18,8 +18,9 @@ const NurseTable = ({ nurses }) => {
             <td>{nurse.email}</td>
             <td>{nurse.name}</td>
             <td>
-              <button onClick={() => handleUpdate(nurse.id)}>Update</button>
-              <button onClick={() => handleDelete(nurse.id)}>Delete</button>
+              <button onClick={() => handleUpdate(nurse.empID)}>Update</button>
+              <button onClick={() => handleDelete(nurse.empID)}>Delete</button>
+              <button onClick={() => handleView(nurse.empID)}>View</button>
             </td>
           </tr>
         ))}
@@ -37,5 +38,11 @@ const handleDelete = (nurseId) => {
   // Add logic for deleting nurse
   console.log(`Delete nurse with ID: ${nurseId}`);
 };
+
+const handleView = (nurseId) => {
+  // Add logic for updating nurse details
+  console.log(`Update nurse with ID: ${nurseId}`);
+};
+
 
 export default NurseTable;

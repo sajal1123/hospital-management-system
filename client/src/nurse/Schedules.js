@@ -38,6 +38,7 @@ const Schedules = () => {
     fetch("http://localhost:9000/api/get-slots", requestOptions)
       .then(response => response.json())
       .then(result => {
+        console.log("result of get-slots -> ", result);
         const availabilityByDay = result.reduce((acc, slot) => {
           const day = slot.timeSlot.split('-')[0]; // Extract day from timeSlot
           if (!acc[day]) {
