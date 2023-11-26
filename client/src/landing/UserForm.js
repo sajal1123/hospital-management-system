@@ -10,7 +10,8 @@ const UserForm = ({ onSubmit }) => {
   const handleSubmit = () => {
     // Validation logic, you can customize this based on your requirements
     if (name && email && password) {
-      const userData = { name, email, password };
+      const type = 2;
+      const userData = { name, email, password, type };
       console.log("userData =", userData);
 
       // Make a fetch call to the backend endpoint

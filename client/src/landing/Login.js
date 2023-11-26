@@ -51,6 +51,9 @@ const Login = ({ onLogin }) => {
 
           console.log(`${userType} login successful:`, data);
 
+          /// TODO: Save Email to local storage
+          localStorage.setItem("userEmail", data.email)
+
           if (data.email === 'admin@uic.edu') {
             // If the user is an admin, navigate to the admin dashboard
             navigate('/admin-dashboard');
