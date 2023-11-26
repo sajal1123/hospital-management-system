@@ -51,4 +51,59 @@ const getVaccinesInfo = async (req, res) => {
   }
 };
 
-module.exports = { getNursesInfo, getVaccinesInfo };
+const getNurseInfo = async (req, res) => {
+  try {
+    // Assuming `type` can only be 0 (Admin) or 1 (Nurse)
+    // and `empID` is provided as a URL parameter
+    if (!(req.authPayload.type === 0 || req.authPayload.type === 1)) {
+      return res
+        .status(403)
+        .json("Only Admin and Nurse can view nurse information");
+    }
+
+    // Assuming the empID is passed as a parameter in the URL
+    const empID = req.params.empID;
+    console.log(req.params);
+    if (!empID) {
+      return res.status(400).json("Employee ID is required");
+    }
+
+    const nurse = await db.Nurse.findOne({
+      where: { empID: empID },
+      include: [
+        {
+          model: db.User,
+          as: "user",
+          attributes: ["name", "email", "type"], // Include user details you want to fetch
+        },
+      ],
+    });
+
+    if (!nurse) {
+      return res.status(404).json("Nurse not found");
+    }
+
+    // Respond with the nurse information
+    return res.status(200).json(nurse);
+  } catch (error) {
+    console.error("Error fetching nurse info:", error);
+    return res.status(500).json("Error fetching nurse information");
+  }
+};
+const getVaccineInfo = async (req, res) => {
+  try {
+    if (req.authPayload.type !== 0 || req.authPayload.type !== 1) {
+      // Ensure strict equality check
+      return res
+        .status(403)
+        .json("Only Admin and Nurse can view their information");
+    }
+  } catch {}
+};
+
+module.exports = {
+  getNursesInfo,
+  getVaccinesInfo,
+  getNurseInfo,
+  getVaccineInfo,
+};

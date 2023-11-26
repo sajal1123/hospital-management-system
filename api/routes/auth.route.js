@@ -12,6 +12,7 @@ const {
 const {
   getNursesInfo,
   getVaccinesInfo,
+  getNurseInfo,
 } = require("../controllers/admin.controller");
 
 const {
@@ -29,6 +30,8 @@ router.post("/register", registerUser);
 router.post("/login", signInUser);
 
 router.get("/get-nurses", verifyAccessToken, getNursesInfo);
+
+router.get("/get-nurse", verifyAccessToken, getNurseInfo);
 
 router.get("/get-vaccines", verifyAccessToken, getVaccinesInfo);
 
