@@ -20,14 +20,13 @@ const Login = ({ onLogin }) => {
     
     // Validation logic
     if (
-      (userType === 'employee' && employeeId && employeePassword) ||
-      (userType === 'patient' && patientEmail && patientPassword)
+      (employeeId && employeePassword) ||
+      (patientEmail && patientPassword)
     ) {
       const credentials = {
-        id: userType === 'employee' ? employeeId : null,
-        email: userType === 'patient' ? patientEmail : null,
+        email: userType === 'employee' ? employeeId : patientEmail,
         password: userType === 'employee' ? employeePassword : patientPassword,
-        userType,
+        type: userType
       };
 
       // Make a fetch call to the backend login endpoint
