@@ -155,7 +155,7 @@ const getAvailableSlots = async (req, res) => {
       for (let j = 0; j < slotsPerDay; j++) {
         const timeStart = `${j + 8}:00`; // Assuming the slots start at 8 AM
         const timeEnd = `${j + 9}:00`; // Assuming each slot is 1 hour long
-        const timeSlot = `${dayName}-${dateString} ${timeStart}-${timeEnd}`;
+        const timeSlot = `${dateString}-${dayName} ${timeStart}-${timeEnd}`;
 
         const existingSlot = await db.Schedule.findOne({
           where: { timeSlot: timeSlot },
@@ -189,7 +189,7 @@ const getAvailableSlots = async (req, res) => {
             .replace("T", " "),
         },
       },
-      order: [["timeSlot", "ASC"]], // Order by time slot
+      order: [["id", "ASC"]], // Order by time slot
     });
 
     return res.status(200).json(schedules);
