@@ -1,30 +1,54 @@
 const db = require("../models/index");
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 
-const getNursesInfo = async () => {
+const getNursesInfo = async (req, res) => {
   try {
+    if (req.authPayload.type !== 0) {
+      // Ensure strict equality check
+      return res.status(403).json("Only Admin can view nurse information");
+    }
+
     const nurses = await db.Nurse.findAll({
       include: [
         {
-          model: User,
+          model: db.User,
           as: "user",
-          attributes: ["name"],
+          attributes: ["name", "email"], // Include 'email' to debug
         },
       ],
-      attributes: ["email"],
+      attributes: ["empID", "email"], // Include 'empID' for the response
     });
 
-    return nurses.map((nurse) => {
-      return {
-        name: nurse.user.name,
-        email: nurse.email,
-      };
-    });
+    // Use .map to create a new array of nurse information
+    // console.log(nurses);
+    const nurseInfo = nurses.map((nurse) => ({
+      name: nurse.user.name,
+      email: nurse.email,
+      empID: nurse.empID,
+    }));
+
+    // Send the nurseInfo array as a JSON response
+    res.status(200).json(nurseInfo);
   } catch (error) {
     console.error("Error fetching nurses info:", error);
-    throw error;
+    res.status(500).send("Error fetching nurses information");
   }
 };
 
-module.exports = { getNursesInfo };
+const getVaccinesInfo = async (req, res) => {
+  try {
+    if (req.authPayload.type !== 0) {
+      // Ensure strict equality check
+      return res.status(403).json("Only Admin can view nurse information");
+    }
+    // Fetch all vaccine records from the database
+    const vaccines = await db.Vaccine.findAll();
+
+    // Send the vaccine data as a JSON response
+    res.status(200).json(vaccines);
+  } catch (error) {
+    console.error("Error fetching vaccine info:", error);
+    res.status(500).send("Error fetching vaccine information");
+  }
+};
+
+module.exports = { getNursesInfo, getVaccinesInfo };

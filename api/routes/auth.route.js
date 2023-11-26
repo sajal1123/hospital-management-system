@@ -10,10 +10,16 @@ const {
 } = require("../controllers/nurse.controller");
 
 const {
+  getNursesInfo,
+  getVaccinesInfo,
+} = require("../controllers/admin.controller");
+
+const {
   registerVaccine,
   updateVaccine,
 } = require("../controllers/vaccine.controller");
 const verifyAccessToken = require("../middlewares/verifyUser");
+
 const router = express.Router();
 
 // Registration route
@@ -21,6 +27,10 @@ router.post("/register", registerUser);
 
 // Signin route
 router.post("/login", signInUser);
+
+router.get("/get-nurses", verifyAccessToken, getNursesInfo);
+
+router.get("/get-vaccines", verifyAccessToken, getVaccinesInfo);
 
 router.post("/register-nurse", verifyAccessToken, registerNurse);
 

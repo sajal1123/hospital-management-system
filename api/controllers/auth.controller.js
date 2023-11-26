@@ -57,7 +57,7 @@ const signInUser = async (req, res) => {
       (user.type === 1 && userType != "employee") ||
       (user.type === 2 && userType != "patient")
     ) {
-      res
+      return res
         .status(403)
         .json("Unauthorized Access. Please Login as per your role!");
     }
