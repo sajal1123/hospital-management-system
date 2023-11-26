@@ -122,10 +122,12 @@ const AdminDashboard = () => {
       });
 
       console.log("form data -> ", formData);
+
+      var adminToken = localStorage.getItem("accessToken")
     
       // Modify this part to use the nameData and formData dynamically
       var myHeaders = new Headers();
-      myHeaders.append("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyM0BuZXcuY29tIiwidHlwZSI6MCwiaWF0IjoxNzAwMDA5MzE1fQ.F7KERzGNVJaLuz5knGVetBkHhG99rZuzOwfCRYcJP5k");
+      myHeaders.append("Authorization", adminToken);
       myHeaders.append("Content-Type", "application/json");
   
       var raw = JSON.stringify({
@@ -203,7 +205,7 @@ const AdminDashboard = () => {
     formContainer.appendChild(formTitle);
 
     // Create input fields for vaccine details
-    const vaccineFields = ['Vaccine Name', 'Company', 'Number of Doses Required', 'In Stock'];
+    const vaccineFields = ['Vaccine Name', 'Company', 'Number of Doses Required', 'Description', 'In Stock'];
     const formData = {};
 
     vaccineFields.forEach((field) => {
@@ -267,14 +269,17 @@ const AdminDashboard = () => {
 
         console.log("form data -> ", formData);
 
+        var adminToken = localStorage.getItem("accessToken")
+
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InBwcC5kb2VAZXhhbXBsZS5jb20iLCJ0eXBlIjoxLCJpYXQiOjE3MDAwMTM3NDN9.csWYN9BrPm66BVqxhtPPRJ8GLLhMYbLQZCufo8GRnPo"); // Replace with your actual authorization token
+        myHeaders.append("Authorization", adminToken); // Replace with your actual authorization token
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
-            "vaccineName": formData.vaccinename,
-            "company": formData.company,
-            "dosesRequired": formData.numberofdosesrequired,
+            "name": formData.vaccinename,
+            "companyName": formData.company,
+            "doses": formData.numberofdosesrequired,
+            "description": formData.description,
             "inStock": formData.instock
         });
 
