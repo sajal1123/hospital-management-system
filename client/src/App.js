@@ -8,6 +8,7 @@ import AdminDashboard from './adminDashboard/AdminDashboard';
 import NurseLandingPage from './nurse/NurseLandingPage';
 import PatientLandingPage from './patient/patientLandingPage';
 import Schedules from './nurse/Schedules';
+import UpdateNurseInfo from './nurse/UpdateNurseInfo';
 
 function App() {
   const handleLogin = (username) => {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/employee" element={<NurseLandingPage />} />
             <Route path="/patient" element={<PatientLandingPage />} />
             <Route path="employee/schedules" element={<Schedules />} />
+            <Route path="/profile" element={<UpdateNurseInfo />} />
           </Routes>
         </header>
       </div>

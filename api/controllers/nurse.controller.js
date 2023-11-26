@@ -70,7 +70,7 @@ const updateNurse = async (req, res) => {
     }
 
     const { empID } = req.params; // Assuming empID is passed as a URL parameter
-    const { name, age, gender, email, newPassword } = req.body;
+    const { name, age, gender, email, phoneNumber, address, newPassword } = req.body;
 
     // Check if the nurse exists
     const nurse = await db.Nurse.findOne({ where: { empID } });
@@ -84,6 +84,8 @@ const updateNurse = async (req, res) => {
     if (age) updatedData.age = age;
     if (gender) updatedData.gender = gender;
     if (email) updatedData.email = email;
+    if (phoneNumber) updatedData.phoneNumber = phoneNumber;
+    if (address) updatedData.address = address;
 
     // If there's a new password, hash it before updating
     if (newPassword) {

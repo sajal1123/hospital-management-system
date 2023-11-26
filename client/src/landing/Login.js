@@ -54,6 +54,7 @@ const Login = ({ onLogin }) => {
           /// TODO: Save Email to local storage
           localStorage.setItem("userEmail", data.email)
           localStorage.setItem("accessToken", data.accessToken)
+          localStorage.setItem("empID", data.id)
 
           if (data.email === 'admin@uic.edu') {
             // If the user is an admin, navigate to the admin dashboard
@@ -79,7 +80,8 @@ const Login = ({ onLogin }) => {
           }, 3000);
           console.error(`Error during ${userType} login:`, error.message);
         });
-    } else {
+    }
+    else {
       alert('Please enter the required information.');
     }
   };
