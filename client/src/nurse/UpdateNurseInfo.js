@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 
 const UpdateNurseInfo = () => {
-  const [newPhoneNumber, setNewPhoneNumber] = useState('');
-  const [newAddress, setNewAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUpdate = () => {
     // Create request body
     const requestBody = {
-      newPhoneNumber,
-      newAddress,
+      phone,
+      address,
     };
 
     const nurseToken = localStorage.getItem("accessToken")
     const empID = localStorage.getItem("empID")
+
+    console.log("going to : ", `http://localhost:9000/api/update-nurse/${empID}`);
 
     // Create headers
     const headers = new Headers();
@@ -22,7 +24,7 @@ const UpdateNurseInfo = () => {
 
     // Create requestOptions
     const requestOptions = {
-      method: 'POST',
+      method: 'PUT',
       headers,
       body: JSON.stringify(requestBody),
     };
@@ -54,8 +56,8 @@ const UpdateNurseInfo = () => {
       <input
         type="text"
         id="newPhoneNumber"
-        value={newPhoneNumber}
-        onChange={(e) => setNewPhoneNumber(e.target.value)}
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
       />
       
       <br/>
@@ -65,8 +67,8 @@ const UpdateNurseInfo = () => {
       <input
         type="text"
         id="newAddress"
-        value={newAddress}
-        onChange={(e) => setNewAddress(e.target.value)}
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
       />
 
       <br/>

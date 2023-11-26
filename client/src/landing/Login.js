@@ -26,7 +26,7 @@ const Login = ({ onLogin }) => {
       const credentials = {
         email: userType === 'employee' ? employeeId : patientEmail,
         password: userType === 'employee' ? employeePassword : patientPassword,
-        type: userType
+        userType: userType
       };
 
       // Make a fetch call to the backend login endpoint
@@ -53,7 +53,7 @@ const Login = ({ onLogin }) => {
           /// TODO: Save Email to local storage
           localStorage.setItem("userEmail", data.email)
           localStorage.setItem("accessToken", data.accessToken)
-          localStorage.setItem("empID", data.id)
+          localStorage.setItem("empID", data.empID)
 
           if (data.email === 'admin@uic.edu') {
             // If the user is an admin, navigate to the admin dashboard
