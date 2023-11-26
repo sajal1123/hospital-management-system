@@ -126,46 +126,80 @@ const deleteNurse = async (req, res) => {
 
 const getAvailableSlots = async (req, res) => {
   try {
-    if (req.authPayload.type != 1) {
+    if (req.authPayload.type !== 1) {
+      // Use strict equality for type comparison
       return res.status(403).json("Only Nurse can schedule a slot");
     }
 
-    // Check if the Schedule table is empty
-    const count = await db.Schedule.count();
-    if (count === 0) {
-      // Create 21 records for 3 days with 7 time slots each
-      const days = ["M", "T", "W"]; // Example days
-      const dateBase = new Date(); // Base date (Feb 15, 2023)
+    const daysToAdd = 7; // Look for slots for 7 days starting today
+    const slotsPerDay = 7; // 7 time slots each day
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const currentDay = new Date();
 
-      for (let day of days) {
-        for (let i = 0; i < 7; i++) {
-          const timeStart = `${i + 10}:00`;
-          const timeEnd = `${i + 11}:00`;
-          const dateStr = dateBase.toISOString().slice(0, 10); // Format as YYYY-MM-DD
-          const timeSlot = `${day}-${dateStr}-${timeStart}-${timeEnd}`;
+    let schedulesToCreate = [];
 
-          await db.Schedule.create({
+    for (let i = 0; i < daysToAdd; i++) {
+      const dateStr = new Date(currentDay);
+      dateStr.setDate(dateStr.getDate() + i); // Increment the day for each loop iteration
+      const dateString = dateStr.toISOString().slice(0, 10); // Format as YYYY-MM-DD
+      const dayName = dayNames[dateStr.getDay()];
+
+      for (let j = 0; j < slotsPerDay; j++) {
+        const timeStart = `${j + 8}:00`; // Assuming the slots start at 8 AM
+        const timeEnd = `${j + 9}:00`; // Assuming each slot is 1 hour long
+        const timeSlot = `${dayName}-${dateString} ${timeStart}-${timeEnd}`;
+
+        const existingSlot = await db.Schedule.findOne({
+          where: { timeSlot: timeSlot },
+        });
+
+        if (!existingSlot) {
+          schedulesToCreate.push({
             timeSlot: timeSlot,
             numberOfNurses: 0,
-            capacity: 0,
+            capacity: 0, // Set capacity for each slot if needed
             bookings: 0,
           });
         }
-        dateBase.setDate(dateBase.getDate() + 1);
       }
     }
 
-    // Retrieve the list of schedules where the number of nurses is less than 13
+    if (schedulesToCreate.length > 0) {
+      // Bulk create the missing slots in the database
+      await db.Schedule.bulkCreate(schedulesToCreate);
+    }
+
+    // Retrieve the list of schedules where the number of nurses is less than capacity
     const schedules = await db.Schedule.findAll({
-      where: { numberOfNurses: { [db.Sequelize.Op.lt]: 13 } },
+      where: {
+        numberOfNurses: { [db.Sequelize.Op.lt]: 13 },
+        // Ensure only future slots are fetched
+        timeSlot: {
+          [db.Sequelize.Op.gte]: new Date()
+            .toISOString()
+            .slice(0, 16)
+            .replace("T", " "),
+        },
+      },
+      order: [["timeSlot", "ASC"]], // Order by time slot
     });
 
     return res.status(200).json(schedules);
   } catch (err) {
-    console.error(err);
+    console.error("Error in getting available slots:", err);
     return res.status(500).json("Error in scheduling slot");
   }
 };
+
+module.exports = { getAvailableSlots };
 
 const bookSlots = async (req, res) => {
   try {
