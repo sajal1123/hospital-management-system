@@ -62,21 +62,21 @@ const getNurseInfo = async (req, res) => {
     }
 
     // Assuming the empID is passed as a parameter in the URL
-    const empID = req.params.empID;
-    console.log(req.params);
+    const empID = req.query.empID;
+    // console.log(req);
     if (!empID) {
       return res.status(400).json("Employee ID is required");
     }
 
     const nurse = await db.Nurse.findOne({
       where: { empID: empID },
-      include: [
-        {
-          model: db.User,
-          as: "user",
-          attributes: ["name", "email", "type"], // Include user details you want to fetch
-        },
-      ],
+      //   include: [
+      //     {
+      //       model: db.User,
+      //       as: "user",
+      //       attributes: ["name", "email", "type"], // Include user details you want to fetch
+      //     },
+      //   ],
     });
 
     if (!nurse) {
@@ -92,13 +92,38 @@ const getNurseInfo = async (req, res) => {
 };
 const getVaccineInfo = async (req, res) => {
   try {
-    if (req.authPayload.type !== 0 || req.authPayload.type !== 1) {
-      // Ensure strict equality check
+    if (!(req.authPayload.type === 0 || req.authPayload.type === 1)) {
       return res
         .status(403)
-        .json("Only Admin and Nurse can view their information");
+        .json("Only Admin and Nurse can view nurse information");
     }
-  } catch {}
+
+    const vaccineID = req.query.VaccineID;
+    // console.log(req);
+    if (!vaccineID) {
+      return res.status(400).json("Vaccine ID is required");
+    }
+
+    const vaccine = await db.Vaccine.findOne({
+      where: { VaccineID: vaccineID },
+      //   include: [
+      //     {
+      //       model: db.User,
+      //       as: "user",
+      //       attributes: ["name", "email", "type"], // Include user details you want to fetch
+      //     },
+      //   ],
+    });
+
+    if (!vaccine) {
+      return res.status(404).json("Vaccine not found");
+    }
+
+    return res.status(200).json(vaccine);
+  } catch (error) {
+    console.error("Error fetching nurse info:", error);
+    return res.status(500).json("Error fetching nurse information");
+  }
 };
 
 module.exports = {
