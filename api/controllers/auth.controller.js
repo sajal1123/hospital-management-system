@@ -2,30 +2,92 @@ const db = require("../models/index");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+// const registerUser = async (req, res) => {
+//   try {
+//     const { name, email, password, type } = req.body;
+//     // Check if the email exists
+//     const userExists = await db.User.findOne({
+//       where: { email },
+//     });
+//     if (userExists) {
+//       return res
+//         .status(400)
+//         .send("Email is already associated with an account");
+//     }
+
+//     await db.User.create({
+//       name,
+//       email,
+//       password: await bcrypt.hash(password, 15),
+//       type,
+//     });
+
+//     return res.status(200).send("Registration successful");
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).send("Error in registering user");
+//   }
+// };
+
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, type } = req.body;
-    // Check if the email exists
-    const userExists = await db.User.findOne({
+    const {
+      firstName,
+      middleName,
+      lastName,
+      age,
+      gender,
+      email,
+      password,
+      phone,
+      address,
+      SSN,
+      race,
+      occupation,
+      medicalHistory,
+    } = req.body;
+
+    // Check if the empID or email already exists
+    const patientExists = await db.Patient.findOne({
       where: { email },
     });
-    if (userExists) {
-      return res
-        .status(400)
-        .send("Email is already associated with an account");
+
+    if (patientExists) {
+      return res.status(400).json("Patient with the same email already exists");
     }
 
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 15);
+    const uniqueString = crypto.randomBytes(4).toString("hex");
+
     await db.User.create({
-      name,
+      name: firstName + middleName + lastName,
       email,
-      password: await bcrypt.hash(password, 15),
-      type,
+      password: hashedPassword,
+      type: 2,
     });
 
-    return res.status(200).send("Registration successful");
+    // Create the Nurse record
+    await db.Patient.create({
+      SSN,
+      firstName,
+      middleName,
+      lastName,
+      age,
+      gender,
+      race,
+      occupation,
+      medicalHistory,
+      email,
+      phone,
+      address,
+    });
+
+    return res.status(200).json("Nurse registration successful");
   } catch (err) {
-    console.log(err);
-    return res.status(500).send("Error in registering user");
+    console.error(err);
+
+    return res.status(500).json("Error in registering nurse");
   }
 };
 
