@@ -143,30 +143,39 @@ const getAvailableSlots = async (req, res) => {
       "Saturday",
     ];
     const currentDay = new Date();
-
+    console.log(currentDay);
     let schedulesToCreate = [];
 
     for (let i = 0; i < daysToAdd; i++) {
       const dateStr = new Date(currentDay);
       dateStr.setDate(dateStr.getDate() + i); // Increment the day for each loop iteration
-      const dateString = dateStr.toISOString().slice(0, 10); // Format as YYYY-MM-DD
-      const dayName = dayNames[dateStr.getDay()];
 
       for (let j = 0; j < slotsPerDay; j++) {
-        const timeStart = `${j + 8}:00`; // Assuming the slots start at 8 AM
-        const timeEnd = `${j + 9}:00`; // Assuming each slot is 1 hour long
-        const timeSlot = `${dateString}-${dayName} ${timeStart}-${timeEnd}`;
+        const timeStartHour = j + 8; // Assuming the slots start at 8 AM
+        // Create a new Date object for the specific time slot
+        const timeSlotDate = new Date(
+          dateStr.getFullYear(),
+          dateStr.getMonth(),
+          dateStr.getDate(),
+          timeStartHour - 6
+        );
+
+        // Format timeSlot string
+        const timeSlotString = `${timeSlotDate.toISOString().slice(0, 10)}-${
+          dayNames[timeSlotDate.getDay()]
+        } ${timeStartHour}:00-${timeStartHour + 1}:00`;
 
         const existingSlot = await db.Schedule.findOne({
-          where: { timeSlot: timeSlot },
+          where: { timeSlot: timeSlotString },
         });
 
         if (!existingSlot) {
           schedulesToCreate.push({
-            timeSlot: timeSlot,
+            timeSlot: timeSlotString,
             numberOfNurses: 0,
-            capacity: 0, // Set capacity for each slot if needed
+            capacity: 0,
             bookings: 0,
+            time: timeSlotDate.toISOString(), // Set the time field in ISO 8601 format
           });
         }
       }

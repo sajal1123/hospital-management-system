@@ -14,12 +14,20 @@ const {
   getNursesInfo,
   getVaccinesInfo,
   getVaccineInfo,
+  getPatientsInfo,
 } = require("../controllers/admin.controller");
 
 const {
   registerVaccine,
   updateVaccine,
 } = require("../controllers/vaccine.controller");
+
+const {
+  updatePatient,
+  getAppointment,
+  bookAppointment,
+} = require("../controllers/patient.controller");
+
 const verifyAccessToken = require("../middlewares/verifyUser");
 
 const router = express.Router();
@@ -38,6 +46,8 @@ router.get("/get-vaccines", verifyAccessToken, getVaccinesInfo);
 
 router.get("/get-vaccine", verifyAccessToken, getVaccineInfo);
 
+router.get("/get-patients", verifyAccessToken, getPatientsInfo);
+
 router.post("/register-nurse", verifyAccessToken, registerNurse);
 
 router.put("/update-nurse/:empID", verifyAccessToken, updateNurse);
@@ -53,5 +63,9 @@ router.post("/cancel-slots", verifyAccessToken, cancelSlots);
 router.post("/add-vaccine", verifyAccessToken, registerVaccine);
 
 router.put("/update-vaccine/:VaccineID", verifyAccessToken, updateVaccine);
+
+router.get("/availability", verifyAccessToken, getAppointment);
+
+router.post("/book-appointment", verifyAccessToken, bookAppointment);
 
 module.exports = router;

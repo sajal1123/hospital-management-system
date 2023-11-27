@@ -14,10 +14,14 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "email",
         as: "user",
       });
-      // Nurse.hasMany(models.NurseShifts, {
-      //   foreignKey: "NurseID",
-      //   as: "shifts",
-      // });
+      Patient.hasMany(models.Appointment, {
+        foreignKey: "PatientID",
+        as: "appointments",
+      });
+      Patient.hasMany(models.Record, {
+        foreignKey: "PatientID",
+        as: "records",
+      });
     }
   }
   Patient.init(
@@ -32,19 +36,19 @@ module.exports = (sequelize, DataTypes) => {
       firstName: { type: DataTypes.STRING, allowNull: false },
       middleName: { type: DataTypes.STRING, allowNull: true },
       lastName: { type: DataTypes.STRING, allowNull: false },
-      age: { type: DataTypes.INTEGER, allowNull: false },
-      gender: { type: DataTypes.STRING, allowNull: false },
-      race: { type: DataTypes.STRING, allowNull: false },
-      occupation: { type: DataTypes.STRING, allowNull: false },
-      medicalHistory: { type: DataTypes.STRING, allowNull: false },
+      age: { type: DataTypes.INTEGER, allowNull: true },
+      gender: { type: DataTypes.STRING, allowNull: true },
+      race: { type: DataTypes.STRING, allowNull: true },
+      occupation: { type: DataTypes.STRING, allowNull: true },
+      medicalHistory: { type: DataTypes.STRING, allowNull: true },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
         references: { model: "Users", key: "email" },
       },
-      phone: { type: DataTypes.STRING, allowNull: false },
-      address: { type: DataTypes.STRING, allowNull: false },
+      phone: { type: DataTypes.STRING, allowNull: true },
+      address: { type: DataTypes.STRING, allowNull: true },
     },
     {
       sequelize,

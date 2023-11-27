@@ -1,7 +1,7 @@
 const db = require("../models/index");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const crypto = require("crypto");
 // const registerUser = async (req, res) => {
 //   try {
 //     const { name, email, password, type } = req.body;
@@ -59,9 +59,10 @@ const registerUser = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 15);
     const uniqueString = crypto.randomBytes(4).toString("hex");
+    const name = firstName + middleName + lastName;
 
     await db.User.create({
-      name: firstName + middleName + lastName,
+      name,
       email,
       password: hashedPassword,
       type: 2,
@@ -83,11 +84,11 @@ const registerUser = async (req, res) => {
       address,
     });
 
-    return res.status(200).json("Nurse registration successful");
+    return res.status(200).json("Patient registration successful");
   } catch (err) {
     console.error(err);
 
-    return res.status(500).json("Error in registering nurse");
+    return res.status(500).json("Error in registering Patient");
   }
 };
 
