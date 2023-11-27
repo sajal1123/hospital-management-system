@@ -1,6 +1,7 @@
 // src/components/PatientLandingPage.js
 import React from 'react';
 import NavbarPatient from './navBar';
+import { useNavigate } from 'react-router-dom';
 import './patientLandingPage.css';
 
 const PatientLandingPage = () => {
@@ -11,10 +12,10 @@ const PatientLandingPage = () => {
     // Add more patient information as needed
   };
 
-  const handleScheduleVaccination = () => {
-    // Implement scheduling logic
-    console.log('Scheduling vaccination...');
-  };
+  const navigate = useNavigate();
+  const goToScheduleVaccination = () => {
+    navigate('/patient/schedule-vaccination')
+  }
 
   const handleModifyAppointments = () => {
     // Implement appointment modification logic
@@ -44,7 +45,7 @@ const PatientLandingPage = () => {
           </tbody>
         </table>
         <div className="landing-page-buttons">
-          <button onClick={handleScheduleVaccination}>Schedule Vaccination</button>
+          <button onClick={goToScheduleVaccination}>Schedule Vaccination</button>
           <button onClick={handleModifyAppointments}>Modify Appointments</button>
         </div>
       </div>

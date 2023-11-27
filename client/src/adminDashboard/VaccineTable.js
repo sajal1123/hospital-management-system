@@ -142,7 +142,7 @@ const handleUpdate = (vaccineId) => {
               companyName: formData.companyname,
               doses: formData.doses,
               description: formData.description,
-              updateQty: formData.instock
+              updateQty: parseInt(formData.instock)
           });
 
           console.log("raw = ", raw);

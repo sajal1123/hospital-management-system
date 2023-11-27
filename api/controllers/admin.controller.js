@@ -25,12 +25,12 @@ const getNursesInfo = async (req, res) => {
           ],
         },
       ],
-      attributes: ["empID", "email", "firstName", "lastName"],
+      attributes: ["empID", "email", "firstName", "middleName", "lastName"],
     });
 
     const nurseInfo = nurses.map((nurse) => ({
       empID: nurse.empID,
-      name: nurse.user.name,
+      name: nurse.firstName + ' ' + nurse.middleName + ' ' + nurse.lastName,
       email: nurse.email,
       shifts: nurse.shifts.map((shift) =>
         shift.timeSlot ? shift.timeSlot.timeSlot : null

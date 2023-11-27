@@ -36,7 +36,7 @@ const AdminDashboard = () => {
       .then((response) => response.json())
       .then((data) => setNurses(data));
 
-    fetch('http://localhost:9000/api/getPatients', requestOptions)
+    fetch('http://localhost:9000/api/get-patients', requestOptions)
       .then((response) => response.json())
       .then((data) => setPatients(data));
 

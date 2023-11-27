@@ -71,7 +71,7 @@ const updateNurse = async (req, res) => {
 
     const { empID } = req.params; // Assuming empID is passed as a URL parameter
     const { name, age, gender, email, phone, address, newPassword } = req.body;
-
+    console.log(req.body)
     // Check if the nurse exists
     const nurse = await db.Nurse.findOne({ where: { empID } });
     if (!nurse) {
@@ -80,7 +80,22 @@ const updateNurse = async (req, res) => {
 
     // Update information
     let updatedData = {};
-    if (name) updatedData.name = name;
+    if (name) {
+      const splitArr = name.split(" ")
+      let middleName, firstName, lastName;
+      if(splitArr.length == 3) {
+        firstName = splitArr[0]
+        middleName = splitArr[1]
+        lastName = splitArr[2]
+      }else{
+        firstName = splitArr[0]
+        lastName = splitArr[1]
+      }
+      console.log(firstName, middleName, lastName)
+      if(firstName) updatedData.firstName = firstName;
+      if(middleName) updatedData.middleName = middleName;
+      if(lastName) updatedData.lastName = lastName;
+      }
     if (age) updatedData.age = age;
     if (gender) updatedData.gender = gender;
     if (email) updatedData.email = email;
@@ -94,7 +109,8 @@ const updateNurse = async (req, res) => {
     }
 
     // Perform the update
-    await db.Nurse.update(updatedData, { where: { empID } });
+    console.log(updatedData, empID)
+    await db.Nurse.update(updatedData, { where: { empID: empID } });
 
     return res.status(200).json("Nurse information updated successfully");
   } catch (err) {
@@ -353,6 +369,7 @@ const getNurseInfo = async (req, res) => {
         "empID",
         "email",
         "firstName",
+        "middleName",
         "lastName",
         "phone",
         "gender",
@@ -367,7 +384,7 @@ const getNurseInfo = async (req, res) => {
 
     const nurseInfo = {
       empID: nurse.empID,
-      name: nurse.user ? nurse.user.name : null,
+      name: nurse.user ? nurse.firstName + ' ' + nurse.middleName + ' ' + nurse.lastName : null,
       email: nurse.email,
       address: nurse.address,
       phone: nurse.phone,
