@@ -137,9 +137,66 @@ const getVaccineInfo = async (req, res) => {
   }
 };
 
+const getPatientsInfo = async (req, res) => {
+  try {
+    const patients = await db.Patient.findAll({
+      include: [
+        {
+          model: db.User,
+          as: "user",
+          attributes: ["name", "email"],
+        },
+        {
+          model: db.Appointment, // Make sure this matches the model name defined in your associations
+          as: "appointments", // Use the alias defined in Patient.associate
+          required: false,
+        },
+        {
+          model: db.Record, // Assuming you have a Record model with an association to Patient
+          as: "records", // Use the alias defined in Patient.associate
+          required: false,
+        },
+      ],
+      attributes: {
+        exclude: ["password"], // Exclude sensitive information
+      },
+      order: [
+        ["lastName", "ASC"],
+        ["firstName", "ASC"],
+        [{ model: db.Appointment, as: "appointments" }, "updatedAt", "ASC"],
+        [{ model: db.Record, as: "records" }, "createdAt", "DESC"],
+      ],
+    });
+
+    const patientInfo = patients.map((patient) => ({
+      id: patient.ID,
+      name: `${patient.firstName} ${patient.lastName}`,
+      email: patient.email,
+      phone: patient.phone,
+      address: patient.address,
+      appointments: patient.appointments.map((a) => ({
+        // Extract the appointment details you need, for example:
+        appointmentDate: a.appointmentDate,
+        // ... other appointment fields
+      })),
+      records: patient.records.map((r) => ({
+        // Extract the record details you need, for example:
+        visitDate: r.createdAt,
+        // ... other record fields
+      })),
+    }));
+
+    res.status(200).json(patientInfo);
+  } catch (error) {
+    console.error("Error fetching patients info:", error);
+    res.status(500).send("Error fetching patients information");
+  }
+};
+
 module.exports = {
   getNursesInfo,
   getVaccinesInfo,
   getNurseInfo,
   getVaccineInfo,
+  getPatientsInfo,
 };
