@@ -45,6 +45,7 @@ Object.keys(db).forEach((modelName) => {
 });
 
 sequelize.sync({ alter: true }).then(() => {
+  console.log(db.User.associations);
   console.log("Database synchronized");
 });
 
