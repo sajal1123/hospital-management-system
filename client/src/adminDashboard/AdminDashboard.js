@@ -202,7 +202,10 @@ const AdminDashboard = () => {
       
           // Close the form after submitting
       closeForm();
+
+      // window.location.reload();
     }
+    
   }
       
   function addVaccine() {
