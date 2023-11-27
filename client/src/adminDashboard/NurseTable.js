@@ -29,6 +29,18 @@ const NurseTable = ({ nurses }) => {
   );
 };
 
+var adminToken = localStorage.getItem("accessToken");
+
+var myHeaders = new Headers();
+myHeaders.append("Authorization", adminToken);
+myHeaders.append("Content-Type", "application/json");
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+
 const handleUpdate = (nurseId) => {
   // Add logic for updating nurse details
   console.log(`Update nurse with ID: ${nurseId}`);
@@ -41,7 +53,10 @@ const handleDelete = (nurseId) => {
 
 const handleView = (nurseId) => {
   // Add logic for updating nurse details
-  console.log(`Update nurse with ID: ${nurseId}`);
+  console.log("nurseID = ", nurseId);
+  fetch(`http://localhost:9000/api/get-nurse/?empID=${nurseId}`, requestOptions)
+  .then(response => response.json())
+  .then(result => console.log(`INFO FOR NURSE ${nurseId} is `, result))
 };
 
 

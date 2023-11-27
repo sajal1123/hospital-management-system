@@ -16,7 +16,7 @@ const AdminDashboard = () => {
   const [showPatientTable, setShowPatientTable] = useState(true);
   const [showVaccineTable, setShowVaccineTable] = useState(true);
 
-  var adminToken = localStorage.getItem("accessToken")
+  var adminToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
     // Fetch data for nurses, patients, and vaccines when the component mounts
@@ -44,8 +44,6 @@ const AdminDashboard = () => {
       .then((response) => response.json())
       .then((data) => setVaccines(data));
   }, []);
-
-  console.log("nursessss = ", nurses);
 
   const toggleNurseTable = () => setShowNurseTable(!showNurseTable);
   const togglePatientTable = () => setShowPatientTable(!showPatientTable);
