@@ -10,6 +10,7 @@ import PatientLandingPage from './patient/patientLandingPage';
 import Schedules from './nurse/Schedules';
 import UpdateNurseInfo from './nurse/UpdateNurseInfo';
 import ScheduleVaccination from './patient/ScheduleVaccination';
+import RecordVaccination from './nurse/RecordVaccination';
 
 function App() {
   const handleLogin = (username) => {
@@ -35,6 +36,7 @@ function App() {
             <Route path="employee/schedules" element={<Schedules />} />
             <Route path="/profile" element={<UpdateNurseInfo />} />
             <Route path="/patient/schedule-vaccination" element={<ScheduleVaccination />} />
+            <Route path="/employee/record-vaccination" element={<RecordVaccination />} />
           </Routes>
         </header>
       </div>

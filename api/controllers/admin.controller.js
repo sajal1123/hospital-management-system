@@ -46,10 +46,10 @@ const getNursesInfo = async (req, res) => {
 
 const getVaccinesInfo = async (req, res) => {
   try {
-    if (req.authPayload.type !== 0) {
-      // Ensure strict equality check
-      return res.status(403).json("Only Admin can view nurse information");
-    }
+    // if (req.authPayload.type !== 0) {
+    //   // Ensure strict equality check
+    //   return res.status(403).json("Only Admin can view nurse information");
+    // }
     // Fetch all vaccine records from the database
     const vaccines = await db.Vaccine.findAll();
 
@@ -150,6 +150,7 @@ const getPatientsInfo = async (req, res) => {
           model: db.Appointment, // Make sure this matches the model name defined in your associations
           as: "appointments", // Use the alias defined in Patient.associate
           required: false,
+          attributes: ["TimeSlotID"]
         },
         {
           model: db.Record, // Assuming you have a Record model with an association to Patient
@@ -167,7 +168,7 @@ const getPatientsInfo = async (req, res) => {
         [{ model: db.Record, as: "records" }, "createdAt", "DESC"],
       ],
     });
-
+    console.log(patients.appointments)
     const patientInfo = patients.map((patient) => ({
       id: patient.ID,
       name: `${patient.firstName} ${patient.lastName}`,

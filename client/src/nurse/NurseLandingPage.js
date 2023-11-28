@@ -11,6 +11,9 @@ const NurseLandingPage = () => {
   const goToSchedules = () => {
     navigate('/employee/schedules')
   }
+  const goToRecordVaccine = () => {
+    navigate('/employee/record-vaccination')
+  }
   return (
     <div>
       <Navbar />
@@ -18,7 +21,7 @@ const NurseLandingPage = () => {
         <h2>Welcome Nurse!</h2>
         <div className="landing-page-buttons">
           <button onClick={goToSchedules}>My Schedule</button>
-          <button>Record Vaccines</button>
+          <button onClick={goToRecordVaccine}>Record Vaccines</button>
         </div>
       </div>
     </div>

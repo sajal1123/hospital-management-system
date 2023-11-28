@@ -1,0 +1,12 @@
+.selected {
+    background-color: #aaf;
+    /* Adjust the background color as needed */
+    color: white;
+    /* Adjust the text color as needed */
+  }
+
+.unselected {
+    background-color: rgb(0, 0, 0);
+    /* Adjust the background color as needed */
+    color: white;
+}

@@ -24,8 +24,8 @@ const PatientTable = ({ patients }) => {
             <td>{patient.email}</td>
             <td>{patient.phone}</td>
             <td>{patient.address}</td>
-            <td>{patient.appointments}</td>
-            <td>{patient.records}</td>
+            <td>{"ABC"}</td>
+            <td>{"ABC"}</td>
           </tr>
         ))}
       </tbody>

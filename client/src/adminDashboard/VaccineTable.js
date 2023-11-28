@@ -121,7 +121,7 @@ const handleUpdate = (vaccineId) => {
   
         // Function to close the form popup
         function closeForm() {
-          const formContainer = document.getElementById('viewVaccineForm');
+          const formContainer = document.getElementById('addVaccineForm');
           if (formContainer) {
             formContainer.remove();
           }

@@ -1,3 +1,4 @@
+const { response } = require("express");
 const db = require("../models/index");
 const bcrypt = require("bcrypt");
 
@@ -106,10 +107,10 @@ const getAppointment = async (req, res) => {
 
 const bookAppointment = async (req, res) => {
   try {
-    const { timeSlotID, patientID, vaccineID } = req.body;
+    const { timeSlotID, patientEmail, vaccineID } = req.body;
 
     // Validate the input
-    if (!timeSlotID || !patientID || !vaccineID) {
+    if (!timeSlotID || !patientEmail || !vaccineID) {
       return res.status(400).json("Missing required fields");
     }
 
@@ -119,11 +120,21 @@ const bookAppointment = async (req, res) => {
       return res.status(404).json("Timeslot not available");
     }
 
-    // Check if the patient exists
-    const patient = await db.Patient.findOne({ where: { id: patientID } });
-    if (!patient) {
-      return res.status(404).json("Patient not found");
+    const patient = await db.Patient.findOne({
+      where: { email: patientEmail}
+    })
+
+    if(!patient){
+      return res.status(400).json("Patient Not Foun     d")
     }
+
+    const patientID = patient.ID;
+    console.log(patientID)
+    // Check if the patient exists
+    // const patient = await db.Patient.findOne({ where: { id: patientID } });
+    // if (!patient) {
+    //   return res.status(404).json("Patient not found");
+    // }
 
     // Check if the vaccine exists and is available
     const vaccine = await db.Vaccine.findOne({
