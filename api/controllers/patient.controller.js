@@ -51,6 +51,7 @@ const updatePatient = async (req, res) => {
       if (race) patientUpdateData.race = race;
       if (occupation) patientUpdateData.occupation = occupation;
       if (medicalHistory) patientUpdateData.medicalHistory = medicalHistory;
+      if (phone) patientUpdateData.phone = phone;
 
       await db.Patient.update(patientUpdateData, {
         where: { email },
@@ -253,6 +254,8 @@ const getPatientInfo = async (req, res) => {
       name: `${patient.firstName} ${patient.middleName} ${patient.lastName}`,
       email: patient.email,
       age: patient.age,
+      ssn: patient.ssn,
+      race: patient.race,
       phone: patient.phone,
       address: patient.address,
       appointments: patient.appointments.map((a) => ({

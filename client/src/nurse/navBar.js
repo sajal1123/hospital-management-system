@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import './Navbar.css';
 
-const Navbar = () => {
+const NavbarNurse = () => {
   return (
     <nav className="navbar">
-      <Link to="/nurse" className="nav-item">
+      <Link to="/employee" className="nav-item">
         <FontAwesomeIcon icon={faHome} />
       </Link>
-      <Link to="/profile" className="nav-item">
+      <Link to="/employee/profile" className="nav-item">
         <FontAwesomeIcon icon={faUser} />
       </Link>
       <Link to="/" className="nav-item">
@@ -21,4 +21,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavbarNurse;

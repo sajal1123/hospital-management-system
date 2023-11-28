@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import NavbarNurse from './navBar';
 import './RecordVaccination.css';
 
 const RecordVaccination = () => {
@@ -93,6 +94,7 @@ const RecordVaccination = () => {
 
   return (
     <div>
+      <NavbarNurse/>        
       <h2>Record Vaccination</h2>
       <form>
         <div>

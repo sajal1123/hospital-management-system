@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import NavbarPatient from './navBar';
 import './ScheduleVaccination.css';
 const ScheduleVaccinations = () => {
   const [availableTimes, setAvailableTimes] = useState([]);
@@ -105,6 +106,7 @@ const ScheduleVaccinations = () => {
 
   return (
     <div>
+        <NavbarPatient />
       {/* Left side: Display available appointment times */}
       <div>
         <h2>Available Times</h2>

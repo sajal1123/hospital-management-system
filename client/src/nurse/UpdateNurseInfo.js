@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import NavbarNurse from './navBar';
 
 const UpdateNurseInfo = () => {
   const [phone, setPhone] = useState('');
@@ -51,6 +52,7 @@ const UpdateNurseInfo = () => {
 
   return (
     <div>
+    <NavbarNurse />
       <h2>Update Nurse Information</h2>
       <label htmlFor="newPhoneNumber">New Phone Number:</label>
       <input

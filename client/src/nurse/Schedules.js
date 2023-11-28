@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import NavbarNurse from './navBar';
 import './Schedules.css';
 
 const Schedules = () => {
@@ -184,6 +185,8 @@ const Schedules = () => {
   const hours = Array.from({ length: 7 }, (_, index) => index + 8); // 10 AM to 5 PM
 
   return (
+    <div>
+     <NavbarNurse /> 
     <div className="schedules-container">
       <div className="slot-table">
         <table>
@@ -259,6 +262,7 @@ const Schedules = () => {
         </ul>
       </div>
     </div>
+  </div>
   );
 };
 

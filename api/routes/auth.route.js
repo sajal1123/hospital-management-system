@@ -52,6 +52,8 @@ router.get("/get-vaccine", verifyAccessToken, getVaccineInfo);
 
 router.get("/get-patients", verifyAccessToken, getPatientsInfo);
 
+router.put("/update-patient/:email", verifyAccessToken, updatePatient)
+
 router.post("/register-nurse", verifyAccessToken, registerNurse);
 
 router.put("/update-nurse/:empID", verifyAccessToken, updateNurse);

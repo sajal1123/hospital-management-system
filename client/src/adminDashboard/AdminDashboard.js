@@ -183,6 +183,7 @@ const AdminDashboard = () => {
           }, 3000);
 
           console.log("result of add nurse call - > ", result);
+          window.location.reload();
         })
         .catch(error => {
           // Remove loading animation
@@ -205,7 +206,7 @@ const AdminDashboard = () => {
           // Close the form after submitting
       closeForm();
 
-      // window.location.reload();
+
     }
     
   }
@@ -325,6 +326,7 @@ const AdminDashboard = () => {
                 }, 3000);
 
                 console.log("result of add vaccine call - > ", result);
+                window.location.reload();
             })
             .catch(error => {
                 // Remove loading animation

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import NavbarPatient from './navBar';
 
 const ModifyAppointment = () => {
   const [vaccinationHistory, setVaccinationHistory] = useState([]);
@@ -17,7 +18,6 @@ const ModifyAppointment = () => {
     redirect: 'follow'
   };
 
-
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
@@ -25,6 +25,7 @@ const ModifyAppointment = () => {
         const data = await response.json();
         setVaccinationHistory(data.records);
         setUpcomingAppointments(data.appointments);
+        console.log("patient = ", data);
       } catch (error) {
         console.error('Error fetching patient data:', error);
       }
@@ -60,24 +61,50 @@ const ModifyAppointment = () => {
 
   return (
     <div>
+        <NavbarPatient />
       <h2>Vaccination History</h2>
-      <ul>
-        {vaccinationHistory.map((historyItem) => (
-          <li key={historyItem.id}>
-            {historyItem.vaccineName} || {historyItem.nurseName} || {historyItem.vaccinationTime}
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Vaccine</th>
+            <th>Dose</th>
+            <th>Nurse</th>
+            <th>Time of Vaccination</th>
+          </tr>
+        </thead>
+        <tbody>
+          {vaccinationHistory.map((historyItem) => (
+            <tr key={historyItem.id}>
+              <td>{historyItem.vaccineName}</td>
+              <td>{historyItem.doses}</td>
+              <td>{historyItem.nurseName}</td>
+              <td>{historyItem.vaccinationTime}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       <h2>Upcoming Appointments</h2>
-      <ul>
-        {upcomingAppointments.map((appointment) => (
-          <li key={appointment.id}>
-            {appointment.timeSlotName} || {appointment.vaccineName} || {appointment.appointmentTime}
-            <button onClick={() => handleCancelAppointment(appointment.id)}>Cancel Appointment</button>
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Time Slot</th>
+            <th>Vaccine</th>
+            <th>Modify</th>
+          </tr>
+        </thead>
+        <tbody>
+          {upcomingAppointments.map((appointment) => (
+            <tr key={appointment.id}>
+              <td>{appointment.timeSlotName}</td>
+              <td>{appointment.vaccineName}</td>
+              <td>
+                <button onClick={() => handleCancelAppointment(appointment.id)}>Cancel Appointment</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
