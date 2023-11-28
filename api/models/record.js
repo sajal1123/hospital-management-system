@@ -53,6 +53,11 @@ module.exports = (sequelize, DataTypes) => {
           key: "id", // Key in Schedule to which it references
         },
       },
+      DoseNumber: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
+        allowNull: false,
+      },
     },
     {
       sequelize,

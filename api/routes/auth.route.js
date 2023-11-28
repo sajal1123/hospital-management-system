@@ -8,6 +8,7 @@ const {
   bookSlots,
   cancelSlots,
   getNurseInfo,
+  recordVaccine,
 } = require("../controllers/nurse.controller");
 
 const {
@@ -67,5 +68,7 @@ router.put("/update-vaccine/:VaccineID", verifyAccessToken, updateVaccine);
 router.get("/availability", verifyAccessToken, getAppointment);
 
 router.post("/book-appointment", verifyAccessToken, bookAppointment);
+
+router.post("/record-vaccine", verifyAccessToken, recordVaccine);
 
 module.exports = router;

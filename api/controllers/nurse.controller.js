@@ -71,7 +71,7 @@ const updateNurse = async (req, res) => {
 
     const { empID } = req.params; // Assuming empID is passed as a URL parameter
     const { name, age, gender, email, phone, address, newPassword } = req.body;
-    console.log(req.body)
+    console.log(req.body);
     // Check if the nurse exists
     const nurse = await db.Nurse.findOne({ where: { empID } });
     if (!nurse) {
@@ -81,21 +81,21 @@ const updateNurse = async (req, res) => {
     // Update information
     let updatedData = {};
     if (name) {
-      const splitArr = name.split(" ")
+      const splitArr = name.split(" ");
       let middleName, firstName, lastName;
-      if(splitArr.length == 3) {
-        firstName = splitArr[0]
-        middleName = splitArr[1]
-        lastName = splitArr[2]
-      }else{
-        firstName = splitArr[0]
-        lastName = splitArr[1]
+      if (splitArr.length == 3) {
+        firstName = splitArr[0];
+        middleName = splitArr[1];
+        lastName = splitArr[2];
+      } else {
+        firstName = splitArr[0];
+        lastName = splitArr[1];
       }
-      console.log(firstName, middleName, lastName)
-      if(firstName) updatedData.firstName = firstName;
-      if(middleName) updatedData.middleName = middleName;
-      if(lastName) updatedData.lastName = lastName;
-      }
+      console.log(firstName, middleName, lastName);
+      if (firstName) updatedData.firstName = firstName;
+      if (middleName) updatedData.middleName = middleName;
+      if (lastName) updatedData.lastName = lastName;
+    }
     if (age) updatedData.age = age;
     if (gender) updatedData.gender = gender;
     if (email) updatedData.email = email;
@@ -109,7 +109,7 @@ const updateNurse = async (req, res) => {
     }
 
     // Perform the update
-    console.log(updatedData, empID)
+    console.log(updatedData, empID);
     await db.Nurse.update(updatedData, { where: { empID: empID } });
 
     return res.status(200).json("Nurse information updated successfully");
@@ -396,7 +396,9 @@ const getNurseInfo = async (req, res) => {
 
     const nurseInfo = {
       empID: nurse.empID,
-      name: nurse.user ? nurse.firstName + ' ' + nurse.middleName + ' ' + nurse.lastName : null,
+      name: nurse.user
+        ? nurse.firstName + " " + nurse.middleName + " " + nurse.lastName
+        : null,
       email: nurse.email,
       address: nurse.address,
       phone: nurse.phone,
@@ -414,6 +416,46 @@ const getNurseInfo = async (req, res) => {
   }
 };
 
+const recordVaccine = async (req, res) => {
+  try {
+    if (req.authPayload.type !== 1) {
+      return res
+        .status(403)
+        .json("Unauthorized access. Only Nurse can make a record entry!");
+    }
+
+    const { timeSlotID, patientEmail, vaccineID, doseNumber, nurseID } =
+      req.body;
+
+    // Check if the patient exists
+    const patientRecord = await db.Patient.findOne({
+      where: { email: patientEmail },
+    });
+
+    if (!patientRecord) {
+      return res.status(404).json("Patient not found");
+    }
+
+    const patientID = patientRecord.ID;
+
+    // Create a record in the Record table
+    const newRecord = await db.Record.create({
+      PatientID: patientID,
+      NurseID: nurseID,
+      VaccineID: vaccineID,
+      TimeSlotID: timeSlotID,
+      DoseNumber: doseNumber,
+    });
+
+    return res
+      .status(201)
+      .json({ message: "Record created successfully", newRecord });
+  } catch (error) {
+    console.error("Error in recording vaccine:", error);
+    return res.status(500).json("Error in recording vaccine");
+  }
+};
+
 module.exports = {
   registerNurse,
   updateNurse,
@@ -422,4 +464,5 @@ module.exports = {
   bookSlots,
   cancelSlots,
   getNurseInfo,
+  recordVaccine,
 };

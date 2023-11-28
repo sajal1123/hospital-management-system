@@ -205,6 +205,7 @@ const getPatientsInfo = async (req, res) => {
         timeSlotName: r.timeSlot?.timeSlot,
         vaccinationTime: r.createdAt,
         vaccineName: r.vaccine?.name,
+        vaccinationTime: r.createdAt,
         nurseName: r.nurse?.firstName + ` ` + r.nurse?.lastName,
       })),
     }));
