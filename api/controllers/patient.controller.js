@@ -179,8 +179,104 @@ const bookAppointment = async (req, res) => {
   }
 };
 
+const getPatientInfo = async (req, res) => {
+  try {
+    console.log(req.query);
+    const patientEmail = req.query.patientEmail;
+
+    console.log(patientEmail);
+    const patient = await db.Patient.findOne({
+      where: { email: patientEmail },
+      include: [
+        {
+          model: db.Appointment,
+          as: "appointments",
+          required: false,
+          include: [
+            {
+              model: db.Vaccine,
+              as: "vaccine",
+              attributes: ["name"],
+            },
+            {
+              model: db.Schedule,
+              as: "timeSlot",
+              attributes: ["timeSlot"],
+            },
+          ],
+        },
+        {
+          model: db.Record,
+          as: "records",
+          required: false,
+          include: [
+            {
+              model: db.Vaccine,
+              as: "vaccine",
+              attributes: ["name"],
+            },
+            {
+              model: db.Schedule,
+              as: "timeSlot",
+              attributes: ["timeSlot"],
+            },
+            {
+              model: db.Nurse,
+              as: "nurse",
+              attributes: ["firstName", "lastName"],
+            },
+          ],
+        },
+      ],
+      attributes: [
+        "ID",
+        "firstName",
+        "middleName",
+        "lastName",
+        "email",
+        "age",
+        "phone",
+        "address",
+      ],
+      order: [
+        [{ model: db.Appointment, as: "appointments" }, "updatedAt", "ASC"],
+        [{ model: db.Record, as: "records" }, "createdAt", "DESC"],
+      ],
+    });
+
+    if (!patient) {
+      return res.status(404).json("Patient not found");
+    }
+
+    const patientInfo = {
+      id: patient.ID,
+      name: `${patient.firstName} ${patient.middleName} ${patient.lastName}`,
+      email: patient.email,
+      age: patient.age,
+      phone: patient.phone,
+      address: patient.address,
+      appointments: patient.appointments.map((a) => ({
+        timeSlotName: a.timeSlot?.timeSlot,
+        vaccineName: a.vaccine?.name,
+      })),
+      records: patient.records.map((r) => ({
+        timeSlotName: r.timeSlot?.timeSlot,
+        vaccinationTime: r.createdAt,
+        vaccineName: r.vaccine?.name,
+        nurseName: r.nurse?.firstName + ` ` + r.nurse?.lastName,
+      })),
+    };
+
+    res.status(200).json(patientInfo);
+  } catch (error) {
+    console.error("Error fetching patient info:", error);
+    res.status(500).send("Error fetching patient information");
+  }
+};
+
 module.exports = {
   updatePatient,
   getAppointment,
   bookAppointment,
+  getPatientInfo,
 };
