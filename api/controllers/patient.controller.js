@@ -279,7 +279,7 @@ const getPatientInfo = async (req, res) => {
 const cancelAppointment = async (req, res) => {
   try {
     const { appointmentID } = req.params;
-
+    console.log("appo ID = ", appointmentID);
     const appointment = await db.Appointment.findOne({
       where: { id: appointmentID },
       include: ["vaccine", "timeSlot"],
@@ -287,11 +287,6 @@ const cancelAppointment = async (req, res) => {
 
     if (!appointment) {
       return res.status(404).json("Appointment not found");
-    }
-
-    // Validate if the appointment is for the requesting patient
-    if (appointment.patient.email !== patientEmail) {
-      return res.status(403).json("Unauthorized: Patient does not match");
     }
 
     // Delete the appointment
