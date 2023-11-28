@@ -28,6 +28,7 @@ const {
   getAppointment,
   bookAppointment,
   getPatientInfo,
+  cancelAppointment,
 } = require("../controllers/patient.controller");
 
 const verifyAccessToken = require("../middlewares/verifyUser");
@@ -74,5 +75,11 @@ router.post("/book-appointment", verifyAccessToken, bookAppointment);
 router.post("/record-vaccine", verifyAccessToken, recordVaccine);
 
 router.get("/get-patient", verifyAccessToken, getPatientInfo);
+
+router.delete(
+  "/cancel-appointment/:appointmentID",
+  verifyAccessToken,
+  cancelAppointment
+);
 
 module.exports = router;

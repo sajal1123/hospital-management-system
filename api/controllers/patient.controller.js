@@ -256,10 +256,12 @@ const getPatientInfo = async (req, res) => {
       phone: patient.phone,
       address: patient.address,
       appointments: patient.appointments.map((a) => ({
+        id: a.id,
         timeSlotName: a.timeSlot?.timeSlot,
         vaccineName: a.vaccine?.name,
       })),
       records: patient.records.map((r) => ({
+        id: r.id,
         timeSlotName: r.timeSlot?.timeSlot,
         vaccinationTime: r.createdAt,
         vaccineName: r.vaccine?.name,
@@ -274,9 +276,52 @@ const getPatientInfo = async (req, res) => {
   }
 };
 
+const cancelAppointment = async (req, res) => {
+  try {
+    const { appointmentID } = req.params;
+
+    const appointment = await db.Appointment.findOne({
+      where: { id: appointmentID },
+      include: ["vaccine", "timeSlot"],
+    });
+
+    if (!appointment) {
+      return res.status(404).json("Appointment not found");
+    }
+
+    // Validate if the appointment is for the requesting patient
+    if (appointment.patient.email !== patientEmail) {
+      return res.status(403).json("Unauthorized: Patient does not match");
+    }
+
+    // Delete the appointment
+    await db.Appointment.destroy({ where: { id: appointmentID } });
+
+    // Decrement the onHold count for the associated vaccine
+    if (appointment.vaccine) {
+      await db.Vaccine.decrement("onHold", {
+        where: { VaccineID: appointment.VaccineID },
+      });
+    }
+
+    // Decrement the bookings count for the associated timeslot
+    if (appointment.timeSlot) {
+      await db.Schedule.decrement("bookings", {
+        where: { id: appointment.TimeSlotID },
+      });
+    }
+
+    res.status(200).json("Appointment canceled successfully");
+  } catch (error) {
+    console.error("Error in canceling appointment:", error);
+    res.status(500).json("Error in canceling appointment");
+  }
+};
+
 module.exports = {
   updatePatient,
   getAppointment,
   bookAppointment,
   getPatientInfo,
+  cancelAppointment,
 };
