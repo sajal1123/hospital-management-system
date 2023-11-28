@@ -37,7 +37,7 @@ const VaccineTable = ({ vaccines }) => {
             <td>{vaccine.companyName}</td>
             <td>{vaccine.doses}</td>
             <td>{vaccine.inStock}</td>
-            <td>{0}</td>
+            <td>{vaccine.onHold}</td>
             <td>
               <button onClick={() => handleUpdate(vaccine.VaccineID)}>View/Update</button>
             </td>
