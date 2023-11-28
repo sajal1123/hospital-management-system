@@ -159,6 +159,8 @@ const handleUpdate = (vaccineId) => {
           .then(result => {
             console.log("Vaxx updated successfully");
             console.log(result);
+            
+            window.location.reload();
           })
           .catch(error => console.log('error', error));
 

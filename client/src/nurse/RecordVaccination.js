@@ -85,9 +85,11 @@ const RecordVaccination = () => {
       });
 
       console.log('Vaccination recorded successfully!');
+      alert("Vaccination recorded successfully!");
       // You might want to add some kind of success message or redirect the user
     } catch (error) {
       console.error('Error recording vaccination:', error);
+      alert("Error in recording vaccination!");
       // Handle error, show error message, etc.
     }
   };

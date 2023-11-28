@@ -252,6 +252,7 @@ const Schedules = () => {
       </div>
 
       <div className="your-schedules">
+        <h2>Your Current Schedule</h2>
         <ul>
           {currentShifts.map((slot, index) => (
             <li key={index} className="selected-slot">

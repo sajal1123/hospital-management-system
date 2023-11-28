@@ -176,6 +176,10 @@ const handleViewOrUpdate = (nurseId) => {
           input.value = nurseInfo[field.toLowerCase()];
           input.readOnly = false;
 
+          if (field === 'Address' || field === 'Phone') {
+            input.disabled = true;
+        }
+
           formContainer.appendChild(label);
           formContainer.appendChild(input);
         }
@@ -280,6 +284,8 @@ const handleViewOrUpdate = (nurseId) => {
             }, 3000);
       
             console.log("result of update nurse call - > ", result);
+
+            window.location.reload();
           })
           .catch(error => {
             // Remove loading animation

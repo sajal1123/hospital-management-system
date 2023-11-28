@@ -39,10 +39,12 @@ const UpdateNurseInfo = () => {
       .then(data => {
         // Handle success, update UI or show a success message
         console.log('Update Nurse Info Response:', data);
+        alert("Your Information has been updated!");
       })
       .catch(error => {
         // Handle error, update UI or show an error message
         console.error('Update Nurse Info Error:', error);
+        alert("Failed to update your Information!");
       })
       .finally(() => {
         // Set loading state to false after API call completes
