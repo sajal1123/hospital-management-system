@@ -74,7 +74,7 @@ const ScheduleVaccinations = () => {
     const appointmentData = {
       timeSlotID: selectedTime,
       patientEmail,
-      vaccineID: selectedVaccine,
+      vaccineID: parseInt(selectedVaccine, 10),
     };
 
     console.log("appointment data = ", appointmentData);
