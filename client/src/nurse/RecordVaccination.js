@@ -65,8 +65,9 @@ const RecordVaccination = () => {
     const vaccinationData = {
       timeSlotID: parseInt(selectedTimeSlot, 10),
       patientEmail,
-      vaccineID: selectedVaccine,
+      vaccineID: parseInt(selectedVaccine, 10),
       doseNumber: parseInt(doseNumber, 10),
+      nurseID: nurseID
     };
     console.log("RECORDING VACCINE:");
     console.log("vaxx data = ", vaccinationData);

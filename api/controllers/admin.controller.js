@@ -181,7 +181,7 @@ const getPatientsInfo = async (req, res) => {
           ],
         },
       ],
-      attributes: ["ID", "firstName", "middleName", "lastName", "email", "age"],
+      attributes: ["ID", "firstName", "middleName", "lastName", "email", "age", "phone", "address"],
       order: [
         ["lastName", "ASC"],
         ["firstName", "ASC"],
@@ -195,12 +195,15 @@ const getPatientsInfo = async (req, res) => {
       name: `${patient.firstName} ${patient.middleName} ${patient.lastName}`,
       email: patient.email,
       age: patient.age,
+      phone: patient.phone,
+      address: patient.address,
       appointments: patient.appointments.map((a) => ({
         timeSlotName: a.timeSlot?.timeSlot,
         vaccineName: a.vaccine?.name,
       })),
       records: patient.records.map((r) => ({
         timeSlotName: r.timeSlot?.timeSlot,
+        vaccinationTime: r.createdAt,
         vaccineName: r.vaccine?.name,
         nurseName: r.nurse?.firstName + ` ` + r.nurse?.lastName,
       })),

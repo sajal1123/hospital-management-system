@@ -45,6 +45,8 @@ const AdminDashboard = () => {
       .then((data) => setVaccines(data));
   }, []);
 
+  console.log("patients = ", patients);
+
   const toggleNurseTable = () => setShowNurseTable(!showNurseTable);
   const togglePatientTable = () => setShowPatientTable(!showPatientTable);
   const toggleVaccineTable = () => setShowVaccineTable(!showVaccineTable);
