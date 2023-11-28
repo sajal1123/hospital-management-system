@@ -30,7 +30,7 @@ const getNursesInfo = async (req, res) => {
 
     const nurseInfo = nurses.map((nurse) => ({
       empID: nurse.empID,
-      name: nurse.firstName + ' ' + nurse.middleName + ' ' + nurse.lastName,
+      name: nurse.firstName + " " + nurse.middleName + " " + nurse.lastName,
       email: nurse.email,
       shifts: nurse.shifts.map((shift) =>
         shift.timeSlot ? shift.timeSlot.timeSlot : null
@@ -142,25 +142,46 @@ const getPatientsInfo = async (req, res) => {
     const patients = await db.Patient.findAll({
       include: [
         {
-          model: db.User,
-          as: "user",
-          attributes: ["name", "email"],
+          model: db.Appointment,
+          as: "appointments",
+          required: false,
+          include: [
+            {
+              model: db.Vaccine,
+              as: "vaccine", // Alias as defined in Appointment.associate
+              attributes: ["name"], // Assuming Vaccine model has a 'name' field
+            },
+            {
+              model: db.Schedule,
+              as: "timeSlot", // Alias as defined in Appointment.associate
+              attributes: ["timeSlot"], // Assuming Schedule model has a 'timeSlot' field for name
+            },
+          ],
         },
         {
-          model: db.Appointment, // Make sure this matches the model name defined in your associations
-          as: "appointments", // Use the alias defined in Patient.associate
+          model: db.Record,
+          as: "records",
           required: false,
-          attributes: ["TimeSlotID"]
-        },
-        {
-          model: db.Record, // Assuming you have a Record model with an association to Patient
-          as: "records", // Use the alias defined in Patient.associate
-          required: false,
+          include: [
+            {
+              model: db.Vaccine,
+              as: "vaccine", // Alias as defined in Record.associate
+              attributes: ["name"],
+            },
+            {
+              model: db.Schedule,
+              as: "timeSlot", // Alias as defined in Record.associate
+              attributes: ["timeSlot"],
+            },
+            {
+              model: db.Nurse,
+              as: "nurse", // Alias as defined in Record.associate
+              attributes: ["firstName", "lastName"], // Assuming Nurse model has a 'name' field
+            },
+          ],
         },
       ],
-      attributes: {
-        exclude: ["password"], // Exclude sensitive information
-      },
+      attributes: ["ID", "firstName", "middleName", "lastName", "email", "age"],
       order: [
         ["lastName", "ASC"],
         ["firstName", "ASC"],
@@ -168,22 +189,20 @@ const getPatientsInfo = async (req, res) => {
         [{ model: db.Record, as: "records" }, "createdAt", "DESC"],
       ],
     });
-    console.log(patients.appointments)
+
     const patientInfo = patients.map((patient) => ({
       id: patient.ID,
-      name: `${patient.firstName} ${patient.lastName}`,
+      name: `${patient.firstName} ${patient.middleName} ${patient.lastName}`,
       email: patient.email,
-      phone: patient.phone,
-      address: patient.address,
+      age: patient.age,
       appointments: patient.appointments.map((a) => ({
-        // Extract the appointment details you need, for example:
-        appointmentDate: a.appointmentDate,
-        // ... other appointment fields
+        timeSlotName: a.timeSlot?.timeSlot,
+        vaccineName: a.vaccine?.name,
       })),
       records: patient.records.map((r) => ({
-        // Extract the record details you need, for example:
-        visitDate: r.createdAt,
-        // ... other record fields
+        timeSlotName: r.timeSlot?.timeSlot,
+        vaccineName: r.vaccine?.name,
+        nurseName: r.nurse?.firstName + ` ` + r.nurse?.lastName,
       })),
     }));
 

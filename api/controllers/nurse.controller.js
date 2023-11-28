@@ -241,6 +241,19 @@ const bookSlots = async (req, res) => {
     const empID = nurse.empID;
 
     for (const timeSlotID of timeSlotIDs) {
+      // Check if the slot has already been booked by the same nurse
+      const existingBooking = await db.NurseShifts.findOne({
+        where: {
+          NurseID: empID,
+          TimeSlotID: timeSlotID,
+        },
+      });
+
+      if (existingBooking) {
+        // Skip this slot as it's already booked by the same nurse
+        continue;
+      }
+
       // Create a record in the NurseShifts table
       await db.NurseShifts.create({
         NurseID: empID,
@@ -253,7 +266,6 @@ const bookSlots = async (req, res) => {
       });
 
       if (scheduleRecord) {
-        console.log("Here");
         // Increment the existing number of nurses
         const updatedNursesCount = scheduleRecord.numberOfNurses + 1;
 

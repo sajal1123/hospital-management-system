@@ -115,26 +115,20 @@ const bookAppointment = async (req, res) => {
     }
 
     // Check if the timeslot exists and is available
+
     const timeslot = await db.Schedule.findOne({ where: { id: timeSlotID } });
     if (!timeslot || timeslot.bookings >= timeslot.capacity) {
       return res.status(404).json("Timeslot not available");
     }
 
+    // Fetch the patientID using the provided email
     const patient = await db.Patient.findOne({
-      where: { email: patientEmail}
-    })
-
-    if(!patient){
-      return res.status(400).json("Patient Not Foun     d")
+      where: { email: patientEmail },
+    });
+    if (!patient) {
+      return res.status(404).json("Patient not found");
     }
-
     const patientID = patient.ID;
-    console.log(patientID)
-    // Check if the patient exists
-    // const patient = await db.Patient.findOne({ where: { id: patientID } });
-    // if (!patient) {
-    //   return res.status(404).json("Patient not found");
-    // }
 
     // Check if the vaccine exists and is available
     const vaccine = await db.Vaccine.findOne({
