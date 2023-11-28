@@ -72,22 +72,23 @@ const RecordVaccination = () => {
     console.log("RECORDING VACCINE:");
     console.log("vaxx data = ", vaccinationData);
 
-    // try {
-    //   // Record vaccination
-    //   await fetch('http://localhost:9000/api/record-vaccine', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(vaccinationData),
-    //   });
+    try {
+      // Record vaccination
+      await fetch('http://localhost:9000/api/record-vaccine', {
+        method: 'POST',
+        headers: {
+            'Authorization': adminToken,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vaccinationData),
+      });
 
-    //   console.log('Vaccination recorded successfully!');
-    //   // You might want to add some kind of success message or redirect the user
-    // } catch (error) {
-    //   console.error('Error recording vaccination:', error);
-    //   // Handle error, show error message, etc.
-    // }
+      console.log('Vaccination recorded successfully!');
+      // You might want to add some kind of success message or redirect the user
+    } catch (error) {
+      console.error('Error recording vaccination:', error);
+      // Handle error, show error message, etc.
+    }
   };
 
   return (

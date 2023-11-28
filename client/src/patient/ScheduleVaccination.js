@@ -44,9 +44,9 @@ const ScheduleVaccinations = () => {
         if (data.length > 0) {
             setSelectedVaccine(data[0].VaccineID);
           }
-      } catch (error) {
+    } catch (error) {
         console.error('Error fetching vaccine options:', error);
-      }
+    }
     };
 
     fetchVaccineOptions();
@@ -80,22 +80,28 @@ const ScheduleVaccinations = () => {
 
     try {
       // Book appointment
-      await fetch('http://localhost:9000/api/book-appointment', {
+      let resp = await fetch('http://localhost:9000/api/book-appointment', {
         method: 'POST',
         headers: {
             'Authorization': adminToken,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(appointmentData),
-      });
-
-      console.log('Appointment booked successfully!');
-      // You might want to add some kind of success message or redirect the user
-    } catch (error) {
-      console.error('Error booking appointment:', error);
-      // Handle error, show error message, etc.
+    });
+    
+    if(resp.status === 400){
+        alert("Appointment already booked!");
+    }else{
+        alert("Appointment booked successfully!")
     }
-  };
+
+    // You might want to add some kind of success message or redirect the user
+    } catch (error) {
+        console.error('Error booking appointment:', error);
+        // Handle error, show error message, etc.
+    }
+
+};
 
   return (
     <div>
