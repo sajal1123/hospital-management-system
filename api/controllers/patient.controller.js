@@ -266,6 +266,7 @@ const getPatientInfo = async (req, res) => {
         vaccinationTime: r.createdAt,
         vaccineName: r.vaccine?.name,
         nurseName: r.nurse?.firstName + ` ` + r.nurse?.lastName,
+        doses: r.DoseNumber,
       })),
     };
 
