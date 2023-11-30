@@ -132,12 +132,14 @@ const bookAppointment = async (req, res) => {
       return res.status(404).json("Vaccine not found");
     }
 
-    // Check if the patient already has an appointment
-    const appointments = await db.Appointment.findAll({
-      where: { PatientID: patientID },
+    // Check if the patient already has an incomplete appointment for the same vaccine
+    const existingAppointment = await db.Appointment.findOne({
+      where: { PatientID: patientID, VaccineID: vaccineID, Completed: 0 },
     });
-    if (appointments.some((appointment) => appointment.Completed === 0)) {
-      return res.status(400).json("Patient has incomplete appointments");
+    if (existingAppointment) {
+      return res
+        .status(400)
+        .json("Patient has an incomplete appointment for this vaccine");
     }
 
     // Check if the patient has already taken the required number of doses

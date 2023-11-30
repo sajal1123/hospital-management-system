@@ -424,11 +424,11 @@ const recordVaccine = async (req, res) => {
         .json("Unauthorized access. Only Nurse can make a record entry!");
     }
 
-    const { nurseID } = req.body;
+    const { nurseID, patientEmail, vaccineID } = req.body;
 
     // Check if the patient exists
     const patientRecord = await db.Patient.findOne({
-      where: { email: req.body.patientEmail },
+      where: { email: patientEmail },
     });
 
     if (!patientRecord) {
@@ -437,23 +437,25 @@ const recordVaccine = async (req, res) => {
 
     const patientID = patientRecord.ID;
 
-    // Fetch and update the appointment
+    // Fetch and update the specific appointment matching the patient and vaccine
     const appointment = await db.Appointment.findOne({
-      where: { PatientID: patientID, Completed: 0 },
+      where: { PatientID: patientID, VaccineID: vaccineID, Completed: 0 },
     });
 
     if (!appointment) {
       return res
         .status(404)
-        .json("No pending appointment found for the patient");
+        .json(
+          "No pending appointment found for the patient with the specified vaccine"
+        );
     }
 
     await appointment.update({ Completed: 1 });
-    const { TimeSlotID, VaccineID } = appointment;
+    const { TimeSlotID } = appointment;
 
     // Determine the dose number
     const existingRecordsCount = await db.Record.count({
-      where: { PatientID: patientID },
+      where: { PatientID: patientID, VaccineID: vaccineID },
     });
     const doseNumber = existingRecordsCount + 1;
 
@@ -461,13 +463,13 @@ const recordVaccine = async (req, res) => {
     const newRecord = await db.Record.create({
       PatientID: patientID,
       NurseID: nurseID,
-      VaccineID: VaccineID,
+      VaccineID: vaccineID,
       TimeSlotID: TimeSlotID,
       DoseNumber: doseNumber,
     });
 
     const vaccine = await db.Vaccine.findOne({
-      where: { VaccineID: VaccineID },
+      where: { VaccineID: vaccineID },
     });
     if (vaccine) {
       await vaccine.decrement(["onHold", "inStock"], { by: 1 });

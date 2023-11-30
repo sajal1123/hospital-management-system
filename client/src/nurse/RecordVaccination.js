@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import NavbarNurse from './navBar';
-import './RecordVaccination.css';
+import React, { useState, useEffect } from "react";
+import NavbarNurse from "./navBar";
+import "./RecordVaccination.css";
 
 const RecordVaccination = () => {
   const [timeSlots, setTimeSlots] = useState([]);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
-  const [patientEmail, setPatientEmail] = useState('');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [patientEmail, setPatientEmail] = useState("");
   const [vaccineOptions, setVaccineOptions] = useState([]);
-  const [selectedVaccine, setSelectedVaccine] = useState('');
-  const [doseNumber, setDoseNumber] = useState('');
+  const [selectedVaccine, setSelectedVaccine] = useState("");
+  const [doseNumber, setDoseNumber] = useState("");
 
   const nurseID = localStorage.getItem("empID");
   const adminToken = localStorage.getItem("accessToken");
@@ -18,36 +18,41 @@ const RecordVaccination = () => {
   myHeaders.append("Content-Type", "application/json");
 
   var requestOptions = {
-    method: 'GET',
+    method: "GET",
     headers: myHeaders,
-    redirect: 'follow'
+    redirect: "follow",
   };
-
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
-        const response = await fetch('http://localhost:9000/api/get-slots', requestOptions);
+        const response = await fetch(
+          "http://localhost:9000/api/get-slots",
+          requestOptions
+        );
         const data = await response.json();
         setTimeSlots(data);
         if (data.length > 0) {
-            setSelectedTimeSlot(data[0].id);
-          }
+          setSelectedTimeSlot(data[0].id);
+        }
       } catch (error) {
-        console.error('Error fetching time slots:', error);
+        console.error("Error fetching time slots:", error);
       }
     };
 
     const fetchVaccineOptions = async () => {
       try {
-        const response = await fetch('http://localhost:9000/api/get-vaccines', requestOptions);
+        const response = await fetch(
+          "http://localhost:9000/api/get-vaccines",
+          requestOptions
+        );
         const data = await response.json();
         setVaccineOptions(data);
         if (data.length > 0) {
-            setSelectedVaccine(data[0].VaccineID);
-          }
+          setSelectedVaccine(data[0].VaccineID);
+        }
       } catch (error) {
-        console.error('Error fetching vaccine options:', error);
+        console.error("Error fetching vaccine options:", error);
       }
     };
 
@@ -58,7 +63,7 @@ const RecordVaccination = () => {
   const handleVaccinationRecord = async () => {
     // Validate input
     if (!patientEmail) {
-      console.error('Please fill in all required fields.');
+      console.error("Please fill in all required fields.");
       return;
     }
 
@@ -66,33 +71,33 @@ const RecordVaccination = () => {
     const vaccinationData = {
       // timeSlotID: parseInt(selectedTimeSlot, 10),
       patientEmail,
-      // vaccineID: parseInt(selectedVaccine, 10),
+      vaccineID: parseInt(selectedVaccine, 10),
       // doseNumber: parseInt(doseNumber, 10),
-      nurseID: nurseID
+      nurseID: nurseID,
     };
     console.log("RECORDING VACCINE:");
     console.log("vaxx data = ", vaccinationData);
 
     try {
       // Record vaccination
-      const resp = await fetch('http://localhost:9000/api/record-vaccine', {
-        method: 'POST',
+      const resp = await fetch("http://localhost:9000/api/record-vaccine", {
+        method: "POST",
         headers: {
-            'Authorization': adminToken,
-            'Content-Type': 'application/json',
+          Authorization: adminToken,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(vaccinationData),
       });
 
       // console.log('Vaccination recorded successfully!');
-      if(resp.status != 201){
-      alert(await resp.json());  
+      if (resp.status != 201) {
+        alert(await resp.json());
       } else {
-      alert("Vaccination recorded successfully!");
+        alert("Vaccination recorded successfully!");
       }
       // You might want to add some kind of success message or redirect the user
     } catch (error) {
-      console.error('Error recording vaccination:', error);
+      console.error("Error recording vaccination:", error);
       alert("Error in recording vaccination!");
       // Handle error, show error message, etc.
     }
@@ -100,7 +105,7 @@ const RecordVaccination = () => {
 
   return (
     <div>
-      <NavbarNurse/>        
+      <NavbarNurse />
       <h2>Record Vaccination</h2>
       <form>
         <div>
@@ -110,6 +115,19 @@ const RecordVaccination = () => {
             value={patientEmail}
             onChange={(e) => setPatientEmail(e.target.value)}
           />
+        </div>
+        <div>
+          <label>Vaccine:</label>
+          <select
+            value={selectedVaccine}
+            onChange={(e) => setSelectedVaccine(e.target.value)}
+          >
+            {vaccineOptions.map((vaccine) => (
+              <option key={vaccine.VaccineID} value={vaccine.VaccineID}>
+                {vaccine.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <button type="button" onClick={handleVaccinationRecord}>

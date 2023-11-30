@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import NavbarPatient from './navBar';
-import './ScheduleVaccination.css';
+import React, { useState, useEffect } from "react";
+import NavbarPatient from "./navBar";
+import "./ScheduleVaccination.css";
 const ScheduleVaccinations = () => {
   const [availableTimes, setAvailableTimes] = useState([]);
-  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedTime, setSelectedTime] = useState("");
   const [vaccineOptions, setVaccineOptions] = useState([]);
-  const [selectedVaccine, setSelectedVaccine] = useState('');
+  const [selectedVaccine, setSelectedVaccine] = useState("");
   const [patientData, setPatientData] = useState([]);
   const [filteredVaccineOptions, setFilteredVaccineOptions] = useState([]);
-
-
 
   const adminToken = localStorage.getItem("accessToken");
   const patientEmail = localStorage.getItem("userEmail");
@@ -19,59 +17,47 @@ const ScheduleVaccinations = () => {
   myHeaders.append("Content-Type", "application/json");
 
   var requestOptions = {
-    method: 'GET',
+    method: "GET",
     headers: myHeaders,
-    redirect: 'follow'
+    redirect: "follow",
   };
 
   // Fetch available appointment times
   useEffect(() => {
-    
-    fetch(`http://localhost:9000/api/get-patient/?patientEmail=${patientEmail}`, requestOptions)
-      .then(response => response.json())
-      .then(patient => setPatientData(patient))
-      .catch(error => console.error('Error fetching patient data:', error));
+    Promise.all([
+      fetch(
+        `http://localhost:9000/api/get-patient/?patientEmail=${patientEmail}`,
+        requestOptions
+      ),
+      fetch("http://localhost:9000/api/get-vaccines", requestOptions),
+    ])
+      .then(([patientResponse, vaccineResponse]) =>
+        Promise.all([patientResponse.json(), vaccineResponse.json()])
+      )
+      .then(([patientData, vaccineData]) => {
+        setPatientData(patientData);
+        setVaccineOptions(vaccineData);
 
-      fetch('http://localhost:9000/api/availability', requestOptions)
-        .then(response => response.json())
-        .then(data => setAvailableTimes(data['availableSlots']))
-        .catch(error => console.error('Error fetching available times:', error));
-  
-    fetch('http://localhost:9000/api/get-vaccines', requestOptions)
+        const combinedVaccineOptions = combineAndFilterVaccineOptions(
+          patientData,
+          vaccineData
+        );
+        setFilteredVaccineOptions(combinedVaccineOptions);
 
-        .then(response => response.json())
-        .then(data => {
-          setVaccineOptions(data);
-          setFilteredVaccineOptions(data);
-          if (data.length > 0) {
-            setSelectedVaccine(data[0].VaccineID);
-          }
-        })
-        .catch(error => console.error('Error fetching vaccine options:', error));
-  
-    // const filterVaccineOptions = () => {
-    //   try {
-    //     if (
-    //       patientData &&
-    //       patientData.records &&
-    //       patientData.records.length > 0 &&
-    //       vaccineOptions &&
-    //       vaccineOptions.length > 0
-    //     ) {
-    //       const filteredOptions = vaccineOptions.filter(option =>
-    //         patientData.records.some(record => record.vaccineName === option.name)
-    //       );
-    //       setFilteredVaccineOptions(filteredOptions);
-    //     } else {
-    //       setFilteredVaccineOptions(vaccineOptions);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error filtering vaccine options:', error);
-    //   }
-    // };
-  
+        if (combinedVaccineOptions.length > 0) {
+          setSelectedVaccine(combinedVaccineOptions[0].VaccineID);
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+
+    fetch("http://localhost:9000/api/availability", requestOptions)
+      .then((response) => response.json())
+      .then((data) => setAvailableTimes(data["availableSlots"]))
+      .catch((error) =>
+        console.error("Error fetching available times:", error)
+      );
   }, []);
-  
+
   console.log("vaccine options = ", vaccineOptions);
   console.log("patient Data = ", patientData);
   console.log("records = ", patientData.records);
@@ -80,10 +66,19 @@ const ScheduleVaccinations = () => {
   //   console.log("kdjsgbkjdsgbsdg =", record);
   // });
 
+  const combineAndFilterVaccineOptions = (patientData, vaccineData) => {
+    const patientVaccines = new Set([
+      ...(patientData.appointments || []).map((a) => a.vaccineName),
+      ...(patientData.records || []).map((r) => r.vaccineName),
+    ]);
+
+    return vaccineData.filter((vaccine) => patientVaccines.has(vaccine.name));
+  };
+
   const handleAppointmentBooking = async () => {
     // Get patientID from localStorage
     console.log("Book Appointment Clocked");
-    const patientEmail = localStorage.getItem('userEmail');
+    const patientEmail = localStorage.getItem("userEmail");
 
     console.log("selectedTime - ", selectedTime);
     console.log("selectedVaxx - ", selectedVaccine);
@@ -91,7 +86,7 @@ const ScheduleVaccinations = () => {
 
     // Validate input
     if (!selectedTime || !patientEmail || !selectedVaccine) {
-      console.error('Please fill in all required fields.');
+      console.error("Please fill in all required fields.");
       return;
     }
 
@@ -106,45 +101,44 @@ const ScheduleVaccinations = () => {
 
     try {
       // Book appointment
-      let resp = await fetch('http://localhost:9000/api/book-appointment', {
-        method: 'POST',
+      let resp = await fetch("http://localhost:9000/api/book-appointment", {
+        method: "POST",
         headers: {
-            'Authorization': adminToken,
-            'Content-Type': 'application/json',
+          Authorization: adminToken,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(appointmentData),
-    });
-    
-    if(resp.status != 201){
+      });
+
+      if (resp.status != 201) {
         alert(await resp.json());
-    }else{
-        alert("Appointment booked successfully!")
-    }
+      } else {
+        alert("Appointment booked successfully!");
+      }
 
-    // You might want to add some kind of success message or redirect the user
+      // You might want to add some kind of success message or redirect the user
     } catch (error) {
-        console.error('Error booking appointment:', error);
-        // Handle error, show error message, etc.
+      console.error("Error booking appointment:", error);
+      // Handle error, show error message, etc.
     }
-
-};
+  };
 
   return (
     <div>
-        <NavbarPatient />
+      <NavbarPatient />
       {/* Left side: Display available appointment times */}
       <div>
         <h2>Available Times</h2>
         <ul>
-            {availableTimes.map((time) => (
-                <li
-                key={time.id}
-                onClick={() => setSelectedTime(time.id)}
-                className={selectedTime === time.id ? 'selected' : 'unselected'}
-                >
-                {time.timeSlot}
-                </li>
-            ))}
+          {availableTimes.map((time) => (
+            <li
+              key={time.id}
+              onClick={() => setSelectedTime(time.id)}
+              className={selectedTime === time.id ? "selected" : "unselected"}
+            >
+              {time.timeSlot}
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -158,19 +152,12 @@ const ScheduleVaccinations = () => {
               value={selectedVaccine}
               onChange={(e) => setSelectedVaccine(e.target.value)}
             >
-              {(patientData.records || []).length === 0
-                ? vaccineOptions.map((vaccine) => (
-                    <option key={vaccine.VaccineID} value={vaccine.VaccineID}>
-                      {vaccine.name}
-                    </option>
-                  ))
-                : (patientData.records || []).map((record) => (
-                    <option key={record.vaccineName} value={record.vaccineName}>
-                      {record.vaccineName}
-                    </option>
-                  ))}
+              {filteredVaccineOptions.map((vaccine) => (
+                <option key={vaccine.VaccineID} value={vaccine.VaccineID}>
+                  {vaccine.name}
+                </option>
+              ))}
             </select>
-
           </div>
           <br />
           <br />
