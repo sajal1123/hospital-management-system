@@ -12,7 +12,7 @@ const PatientTable = ({ patients }) => {
           <th>Email</th>
           <th>Phone</th>
           <th>Address</th>
-          <th>Appointments</th>
+          <th>Upcoming Appointments</th>
           <th>Records</th>
         </tr>
       </thead>

@@ -176,7 +176,7 @@ const handleViewOrUpdate = (nurseId) => {
           input.value = nurseInfo[field.toLowerCase()];
           input.readOnly = false;
 
-          if (field === 'Address' || field === 'Phone') {
+          if (field === 'Address' || field === 'Phone' || field === 'Email') {
             input.disabled = true;
         }
 

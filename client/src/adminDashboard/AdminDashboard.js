@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import NurseTable from './NurseTable';
 import PatientTable from './PatientTable';
 import VaccineTable from './VaccineTable';
-// import './tableStyle.css';
+import './tableStyle.css';
 import './addNurseForm.css';
 import Navbar from './navBar';
 
@@ -12,9 +12,9 @@ const AdminDashboard = () => {
   const [patients, setPatients] = useState([]);
   const [vaccines, setVaccines] = useState([]);
 
-  const [showNurseTable, setShowNurseTable] = useState(true);
-  const [showPatientTable, setShowPatientTable] = useState(true);
-  const [showVaccineTable, setShowVaccineTable] = useState(true);
+  const [showNurseTable, setShowNurseTable] = useState(false);
+  const [showPatientTable, setShowPatientTable] = useState(false);
+  const [showVaccineTable, setShowVaccineTable] = useState(false);
 
   var adminToken = localStorage.getItem("accessToken");
 
@@ -363,7 +363,6 @@ const AdminDashboard = () => {
           <button onClick={toggleNurseTable}>
             {showNurseTable ? 'Hide' : 'Show'}
           </button>
-          <br/>
           <button onClick={addNurse}>
             {"Add Nurse"}  
           </button>

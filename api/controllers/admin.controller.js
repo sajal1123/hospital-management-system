@@ -103,11 +103,11 @@ const getNurseInfo = async (req, res) => {
 
 const getVaccineInfo = async (req, res) => {
   try {
-    if (!(req.authPayload.type === 0 || req.authPayload.type === 1)) {
-      return res
-        .status(403)
-        .json("Only Admin and Nurse can view nurse information");
-    }
+    // if (!(req.authPayload.type === 0 || req.authPayload.type === 1)) {
+    //   return res
+    //     .status(403)
+    //     .json("Only Admin and Nurse can view nurse information");
+    // }
 
     const vaccineID = req.query.VaccineID;
     // console.log(req);

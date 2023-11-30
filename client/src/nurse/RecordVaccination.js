@@ -57,17 +57,17 @@ const RecordVaccination = () => {
 
   const handleVaccinationRecord = async () => {
     // Validate input
-    if (!selectedTimeSlot || !patientEmail || !selectedVaccine || !doseNumber) {
+    if (!patientEmail) {
       console.error('Please fill in all required fields.');
       return;
     }
 
     // Create vaccination data
     const vaccinationData = {
-      timeSlotID: parseInt(selectedTimeSlot, 10),
+      // timeSlotID: parseInt(selectedTimeSlot, 10),
       patientEmail,
-      vaccineID: parseInt(selectedVaccine, 10),
-      doseNumber: parseInt(doseNumber, 10),
+      // vaccineID: parseInt(selectedVaccine, 10),
+      // doseNumber: parseInt(doseNumber, 10),
       nurseID: nurseID
     };
     console.log("RECORDING VACCINE:");
@@ -75,7 +75,7 @@ const RecordVaccination = () => {
 
     try {
       // Record vaccination
-      await fetch('http://localhost:9000/api/record-vaccine', {
+      const resp = await fetch('http://localhost:9000/api/record-vaccine', {
         method: 'POST',
         headers: {
             'Authorization': adminToken,
@@ -84,8 +84,12 @@ const RecordVaccination = () => {
         body: JSON.stringify(vaccinationData),
       });
 
-      console.log('Vaccination recorded successfully!');
+      // console.log('Vaccination recorded successfully!');
+      if(resp.status != 201){
+      alert(await resp.json());  
+      } else {
       alert("Vaccination recorded successfully!");
+      }
       // You might want to add some kind of success message or redirect the user
     } catch (error) {
       console.error('Error recording vaccination:', error);
@@ -100,45 +104,11 @@ const RecordVaccination = () => {
       <h2>Record Vaccination</h2>
       <form>
         <div>
-          <label>Time Slot:</label>
-          <select
-            value={selectedTimeSlot}
-            onChange={(e) => setSelectedTimeSlot(e.target.value)}
-          >
-            {timeSlots.map((slot) => (
-              <option key={slot.id} value={slot.id}>
-                {slot.timeSlot}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
           <label>Patient Email:</label>
           <input
             type="text"
             value={patientEmail}
             onChange={(e) => setPatientEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Vaccine:</label>
-          <select
-            value={selectedVaccine}
-            onChange={(e) => setSelectedVaccine(e.target.value)}
-          >
-            {vaccineOptions.map((vaccine) => (
-              <option key={vaccine.VaccineID} value={vaccine.VaccineID}>
-                {vaccine.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Dose Number:</label>
-          <input
-            type="text"
-            value={doseNumber}
-            onChange={(e) => setDoseNumber(e.target.value)}
           />
         </div>
         <div>
