@@ -145,6 +145,7 @@ const getPatientsInfo = async (req, res) => {
           model: db.Appointment,
           as: "appointments",
           required: false,
+          where: { Completed: 0 },
           include: [
             {
               model: db.Vaccine,
@@ -181,7 +182,16 @@ const getPatientsInfo = async (req, res) => {
           ],
         },
       ],
-      attributes: ["ID", "firstName", "middleName", "lastName", "email", "age", "phone", "address"],
+      attributes: [
+        "ID",
+        "firstName",
+        "middleName",
+        "lastName",
+        "email",
+        "age",
+        "phone",
+        "address",
+      ],
       order: [
         ["lastName", "ASC"],
         ["firstName", "ASC"],

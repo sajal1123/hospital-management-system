@@ -115,13 +115,6 @@ const bookAppointment = async (req, res) => {
       return res.status(400).json("Missing required fields");
     }
 
-    // Check if the timeslot exists and is available
-
-    const timeslot = await db.Schedule.findOne({ where: { id: timeSlotID } });
-    if (!timeslot || timeslot.bookings >= timeslot.capacity) {
-      return res.status(404).json("Timeslot not available");
-    }
-
     // Fetch the patientID using the provided email
     const patient = await db.Patient.findOne({
       where: { email: patientEmail },
@@ -139,25 +132,33 @@ const bookAppointment = async (req, res) => {
       return res.status(404).json("Vaccine not found");
     }
 
+    // Check if the patient already has an appointment
+    const appointments = await db.Appointment.findAll({
+      where: { PatientID: patientID },
+    });
+    if (appointments.some((appointment) => appointment.Completed === 0)) {
+      return res.status(400).json("Patient has incomplete appointments");
+    }
+
+    // Check if the patient has already taken the required number of doses
+    const recordsCount = await db.Record.count({
+      where: { PatientID: patientID, VaccineID: vaccineID },
+    });
+    if (recordsCount >= vaccine.doses) {
+      return res
+        .status(400)
+        .json("Patient has already taken the required number of doses");
+    }
+
+    // Check if the timeslot exists and is available
+    const timeslot = await db.Schedule.findOne({ where: { id: timeSlotID } });
+    if (!timeslot || timeslot.bookings >= timeslot.capacity) {
+      return res.status(404).json("Timeslot not available");
+    }
+
     // Check for available vaccine quantity
     if (vaccine.inStock < vaccine.onHold + 1) {
       return res.status(400).json("No available vaccines");
-    }
-
-    const existingAppointment = await db.Appointment.findOne({
-      where: {
-        PatientID: patientID,
-        VaccineID: vaccineID,
-        TimeSlotID: timeSlotID,
-      },
-    });
-
-    if (existingAppointment) {
-      return res
-        .status(400)
-        .json(
-          "Appointment already booked for this patient with the selected timeslot and vaccine"
-        );
     }
 
     // Create the appointment
@@ -165,6 +166,7 @@ const bookAppointment = async (req, res) => {
       TimeSlotID: timeSlotID,
       PatientID: patientID,
       VaccineID: vaccineID,
+      Completed: 0, // Assuming default value as 0
     });
 
     // Update the timeslot's bookings count
@@ -193,6 +195,7 @@ const getPatientInfo = async (req, res) => {
           model: db.Appointment,
           as: "appointments",
           required: false,
+          where: { Completed: 0 }, // Only include appointments where Completed is 0
           include: [
             {
               model: db.Vaccine,
@@ -254,8 +257,6 @@ const getPatientInfo = async (req, res) => {
       name: `${patient.firstName} ${patient.middleName} ${patient.lastName}`,
       email: patient.email,
       age: patient.age,
-      ssn: patient.ssn,
-      race: patient.race,
       phone: patient.phone,
       address: patient.address,
       appointments: patient.appointments.map((a) => ({

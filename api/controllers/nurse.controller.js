@@ -424,12 +424,11 @@ const recordVaccine = async (req, res) => {
         .json("Unauthorized access. Only Nurse can make a record entry!");
     }
 
-    const { timeSlotID, patientEmail, vaccineID, doseNumber, nurseID } =
-      req.body;
+    const { nurseID } = req.body;
 
     // Check if the patient exists
     const patientRecord = await db.Patient.findOne({
-      where: { email: patientEmail },
+      where: { email: req.body.patientEmail },
     });
 
     if (!patientRecord) {
@@ -438,14 +437,41 @@ const recordVaccine = async (req, res) => {
 
     const patientID = patientRecord.ID;
 
+    // Fetch and update the appointment
+    const appointment = await db.Appointment.findOne({
+      where: { PatientID: patientID, Completed: 0 },
+    });
+
+    if (!appointment) {
+      return res
+        .status(404)
+        .json("No pending appointment found for the patient");
+    }
+
+    await appointment.update({ Completed: 1 });
+    const { TimeSlotID, VaccineID } = appointment;
+
+    // Determine the dose number
+    const existingRecordsCount = await db.Record.count({
+      where: { PatientID: patientID },
+    });
+    const doseNumber = existingRecordsCount + 1;
+
     // Create a record in the Record table
     const newRecord = await db.Record.create({
       PatientID: patientID,
       NurseID: nurseID,
-      VaccineID: vaccineID,
-      TimeSlotID: timeSlotID,
+      VaccineID: VaccineID,
+      TimeSlotID: TimeSlotID,
       DoseNumber: doseNumber,
     });
+
+    const vaccine = await db.Vaccine.findOne({
+      where: { VaccineID: VaccineID },
+    });
+    if (vaccine) {
+      await vaccine.decrement(["onHold", "inStock"], { by: 1 });
+    }
 
     return res
       .status(201)
