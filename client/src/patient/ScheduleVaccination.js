@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import NavbarPatient from "./navBar";
 import "./ScheduleVaccination.css";
+
 const ScheduleVaccinations = () => {
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
@@ -12,17 +13,19 @@ const ScheduleVaccinations = () => {
   const adminToken = localStorage.getItem("accessToken");
   const patientEmail = localStorage.getItem("userEmail");
 
-  var myHeaders = new Headers();
-  myHeaders.append("Authorization", adminToken);
-  myHeaders.append("Content-Type", "application/json");
+  // Memoizing requestOptions to prevent useEffect from running infinitely
+  const requestOptions = useMemo(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", adminToken);
+    myHeaders.append("Content-Type", "application/json");
 
-  var requestOptions = {
-    method: "GET",
-    headers: myHeaders,
-    redirect: "follow",
-  };
+    return {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+  }, [adminToken]);
 
-  // Fetch available appointment times
   useEffect(() => {
     Promise.all([
       fetch(
@@ -42,10 +45,11 @@ const ScheduleVaccinations = () => {
           patientData,
           vaccineData
         );
-        setFilteredVaccineOptions(combinedVaccineOptions);
 
-        if (combinedVaccineOptions.length > 0) {
-          setSelectedVaccine(combinedVaccineOptions[0].VaccineID);
+        if (combinedVaccineOptions.length === 0) {
+          setFilteredVaccineOptions(vaccineData);
+        } else {
+          setFilteredVaccineOptions(combinedVaccineOptions);
         }
       })
       .catch((error) => console.error("Error fetching data:", error));
@@ -56,15 +60,13 @@ const ScheduleVaccinations = () => {
       .catch((error) =>
         console.error("Error fetching available times:", error)
       );
-  }, []);
+  }, [patientEmail, requestOptions]); // Dependencies are patientEmail and requestOptions
 
-  console.log("vaccine options = ", vaccineOptions);
-  console.log("patient Data = ", patientData);
-  console.log("records = ", patientData.records);
-  // console.log("lolz  =  ", patientData.records.some(record => record.vaccineName == "Vaccine 2"));
-  // patientData.records.forEach((record) => {
-  //   console.log("kdjsgbkjdsgbsdg =", record);
-  // });
+  useEffect(() => {
+    if (filteredVaccineOptions.length > 0) {
+      setSelectedVaccine(filteredVaccineOptions[0].VaccineID);
+    }
+  }, [filteredVaccineOptions]);
 
   const combineAndFilterVaccineOptions = (patientData, vaccineData) => {
     const patientVaccines = new Set([
@@ -72,35 +74,25 @@ const ScheduleVaccinations = () => {
       ...(patientData.records || []).map((r) => r.vaccineName),
     ]);
 
-    return vaccineData.filter((vaccine) => patientVaccines.has(vaccine.name));
+    return vaccineData.filter((vaccine) => !patientVaccines.has(vaccine.name));
   };
 
   const handleAppointmentBooking = async () => {
-    // Get patientID from localStorage
-    console.log("Book Appointment Clocked");
+    console.log("Book Appointment Clicked");
     const patientEmail = localStorage.getItem("userEmail");
 
-    console.log("selectedTime - ", selectedTime);
-    console.log("selectedVaxx - ", selectedVaccine);
-    console.log("patient Email - ", patientEmail);
-
-    // Validate input
     if (!selectedTime || !patientEmail || !selectedVaccine) {
       console.error("Please fill in all required fields.");
       return;
     }
 
-    // Create appointment data
     const appointmentData = {
       timeSlotID: selectedTime,
       patientEmail,
       vaccineID: parseInt(selectedVaccine, 10),
     };
 
-    console.log("appointment data = ", appointmentData);
-
     try {
-      // Book appointment
       let resp = await fetch("http://localhost:9000/api/book-appointment", {
         method: "POST",
         headers: {
@@ -110,23 +102,19 @@ const ScheduleVaccinations = () => {
         body: JSON.stringify(appointmentData),
       });
 
-      if (resp.status != 201) {
+      if (resp.status !== 201) {
         alert(await resp.json());
       } else {
         alert("Appointment booked successfully!");
       }
-
-      // You might want to add some kind of success message or redirect the user
     } catch (error) {
       console.error("Error booking appointment:", error);
-      // Handle error, show error message, etc.
     }
   };
 
   return (
     <div>
       <NavbarPatient />
-      {/* Left side: Display available appointment times */}
       <div>
         <h2>Available Times</h2>
         <ul>
@@ -141,8 +129,6 @@ const ScheduleVaccinations = () => {
           ))}
         </ul>
       </div>
-
-      {/* Right side: Form for vaccine information and appointment booking */}
       <div>
         <h2>Book Appointment</h2>
         <form>
@@ -159,7 +145,6 @@ const ScheduleVaccinations = () => {
               ))}
             </select>
           </div>
-          <br />
           <br />
           <div>
             <button type="button" onClick={handleAppointmentBooking}>

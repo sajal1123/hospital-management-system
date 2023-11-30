@@ -53,6 +53,15 @@ const updatePatient = async (req, res) => {
       if (medicalHistory) patientUpdateData.medicalHistory = medicalHistory;
       if (phone) patientUpdateData.phone = phone;
 
+      // Split the name into first, middle, and last names
+      if (name) {
+        const names = name.split(" ");
+        patientUpdateData.firstName = names[0];
+        patientUpdateData.middleName = names.length === 3 ? names[1] : "";
+        patientUpdateData.lastName =
+          names.length > 1 ? names[names.length - 1] : "";
+      }
+
       await db.Patient.update(patientUpdateData, {
         where: { email },
         transaction,
