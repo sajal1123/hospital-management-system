@@ -27,9 +27,9 @@ const PatientLandingPage = () => {
 
     const fetchPatientDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:9000/api/get-patients/?patientEmail=${patientEmail}`, requestOptions);
+        const response = await fetch(`http://localhost:9000/api/get-patient/?patientEmail=${patientEmail}`, requestOptions);
         const data = await response.json();
-        setPatientDetails(data[0]);
+        setPatientDetails(data);
       } catch (error) {
         console.error('Error fetching vaccine options:', error);
       }

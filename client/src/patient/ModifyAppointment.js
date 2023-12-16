@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import NavbarPatient from './navBar';
+import React, { useState, useEffect } from "react";
+import NavbarPatient from "./navBar";
 
 const ModifyAppointment = () => {
   const [vaccinationHistory, setVaccinationHistory] = useState([]);
@@ -13,21 +13,28 @@ const ModifyAppointment = () => {
   myHeaders.append("Content-Type", "application/json");
 
   var requestOptions = {
-    method: 'GET',
+    method: "GET",
     headers: myHeaders,
-    redirect: 'follow'
+    redirect: "follow",
   };
 
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const response = await fetch(`http://localhost:9000/api/get-patient/?patientEmail=${patientEmail}`, requestOptions);
+        const response = await fetch(
+          `http://localhost:9000/api/get-patient/?patientEmail=${patientEmail}`,
+          requestOptions
+        );
         const data = await response.json();
-        setVaccinationHistory(data.records);
+        const formattedHistory = data.records.map((record) => ({
+          ...record,
+          vaccinationTime: formatDate(record.vaccinationTime),
+        }));
+        setVaccinationHistory(formattedHistory);
         setUpcomingAppointments(data.appointments);
         console.log("patient = ", data);
       } catch (error) {
-        console.error('Error fetching patient data:', error);
+        console.error("Error fetching patient data:", error);
       }
     };
 
@@ -37,31 +44,41 @@ const ModifyAppointment = () => {
   const handleCancelAppointment = async (appointmentID) => {
     try {
       // Cancel appointment
-      await fetch(`http://localhost:9000/api/cancel-appointment/${appointmentID}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': patientToken,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ appointmentID }),
-      });
+      await fetch(
+        `http://localhost:9000/api/cancel-appointment/${appointmentID}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: patientToken,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ appointmentID }),
+        }
+      );
 
       // Update state to reflect the canceled appointment
       setUpcomingAppointments((prevAppointments) =>
-        prevAppointments.filter((appointment) => appointment.id !== appointmentID)
+        prevAppointments.filter(
+          (appointment) => appointment.id !== appointmentID
+        )
       );
 
-      console.log('Appointment canceled successfully!');
+      console.log("Appointment canceled successfully!");
       // You might want to add some kind of success message or notification
     } catch (error) {
-      console.error('Error canceling appointment:', error);
+      console.error("Error canceling appointment:", error);
       // Handle error, show error message, etc.
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+  };
+
   return (
     <div>
-        <NavbarPatient />
+      <NavbarPatient />
       <h2>Vaccination History</h2>
       <table>
         <thead>
@@ -99,7 +116,9 @@ const ModifyAppointment = () => {
               <td>{appointment.timeSlotName}</td>
               <td>{appointment.vaccineName}</td>
               <td>
-                <button onClick={() => handleCancelAppointment(appointment.id)}>Cancel Appointment</button>
+                <button onClick={() => handleCancelAppointment(appointment.id)}>
+                  Cancel Appointment
+                </button>
               </td>
             </tr>
           ))}

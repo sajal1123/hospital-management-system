@@ -1,16 +1,18 @@
 /* src/TableStyles.css */
 .table-container {
-    opacity: 1;
-    max-height: 500px;
-    overflow: hidden;
-    transition: max-height 3s ease-in-out, opacity 3s ease-in-out; /* Added opacity transition */
-  }
+  opacity: 1;
+  max-height: 500px;
+  overflow: auto;
+  width: 90%;
+  margin: 0 auto; /* Add this line to center the element horizontally */
+}
 
 /* tableStyle.css */
 
 /* Add a class for the table */
 .table-container table {
   width: 100%;
+  transition: max-height 3s ease-in-out, opacity 3s ease-in-out; 
   border-collapse: collapse;
   margin-top: 10px;
   background-color: #f2f2f2; /* Set your desired background color */
@@ -50,3 +52,6 @@
     background-color: #0056b3;
   }
   
+  h3{
+    position: sticky;
+  }
