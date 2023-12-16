@@ -18,5 +18,21 @@ Databse Management System built using React and Node.js that handles the vaccina
 ![image](https://github.com/sajal1123/hospital-management-system/assets/113067506/be538750-6248-4b28-b29b-07976dd4205e)
 
 
+### Booking Nurse Shifts
+
+![image](https://github.com/sajal1123/hospital-management-system/assets/113067506/e1344398-1b3e-4ab6-9438-b1d5ed5a26a0)
+
+### Patient Landing Page
+
+![image](https://github.com/sajal1123/hospital-management-system/assets/113067506/6836c23b-76f7-4688-b284-9bc3bdb4a8a4)
+
+### Patient Booking/Modifying Vaccine Slots
+
+![image](https://github.com/sajal1123/hospital-management-system/assets/113067506/2016a4c6-d15b-4b73-a1cc-8de1737acf29)
+
+![image](https://github.com/sajal1123/hospital-management-system/assets/113067506/c3c43aed-ef18-4c59-8253-0da16a461e31)
+
+
+
 
 
